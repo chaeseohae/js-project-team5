@@ -27,11 +27,9 @@ function handleCurrentLocationClick() {
 
   navigator.geolocation.getCurrentPosition(
     function (position) {
-      const lat = position.coords.latitude.toFixed(5);
-      const lng = position.coords.longitude.toFixed(5);
-
-      // 실제 서비스에서는 여기에서 지도 API(카카오 등)로 좌표 -> 주소 변환 가능
-      locationInput.value = `위도 ${lat}, 경도 ${lng}`;
+      const lat = position.coords.latitude;
+      const lng = position.coords.longitude;
+      updateLocationFromCoords(lat, lng);
     },
     function (error) {
       locationInput.value = "";
@@ -52,6 +50,56 @@ function handleCurrentLocationClick() {
       alert(message);
     }
   );
+}
+
+// 좌표를 받아서 주소(도시/동 이름 등)로 변환 후 인풋에 표시
+// - 카카오 지도 JS SDK가 로드되어 있으면 역지오코딩 사용
+// - 없으면 위도/경도 텍스트로 fallback
+function updateLocationFromCoords(lat, lng) {
+  const locationInput = document.getElementById("report-location-input");
+  if (!locationInput) return;
+
+  const latText = lat.toFixed(5);
+  const lngText = lng.toFixed(5);
+
+  // Kakao Maps JS SDK (services 라이브러리) 가 있는 경우
+  if (
+    window.kakao &&
+    window.kakao.maps &&
+    window.kakao.maps.services &&
+    typeof window.kakao.maps.services.Geocoder === "function"
+  ) {
+    const geocoder = new window.kakao.maps.services.Geocoder();
+    const coord = new window.kakao.maps.LatLng(lat, lng);
+
+    geocoder.coord2Address(
+      coord.getLng(),
+      coord.getLat(),
+      function (result, status) {
+        if (
+          status === window.kakao.maps.services.Status.OK &&
+          Array.isArray(result) &&
+          result.length > 0
+        ) {
+          const road =
+            result[0].road_address && result[0].road_address.address_name;
+          const jibun = result[0].address && result[0].address.address_name;
+          const address = road || jibun;
+
+          if (address) {
+            locationInput.value = address;
+            return;
+          }
+        }
+
+        // 주소를 못 가져온 경우 위도/경도 표기로 fallback
+        locationInput.value = `위도 ${latText}, 경도 ${lngText}`;
+      }
+    );
+  } else {
+    // Kakao SDK가 없는 경우 단순 위도/경도 출력
+    locationInput.value = `위도 ${latText}, 경도 ${lngText}`;
+  }
 }
 
 // 위치 인풋 초기화
