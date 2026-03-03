@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>킥보드 신고 - 강필성</title>
+  <link rel="stylesheet" href="my-reports.css" />
+</head>
+<body>
+  <!-- 전체 페이지 컨테이너 -->
+  <div class="report-page">
+
+    <!-- (실제 합칠 때는 지도 영역은 다른 파일에서 올 것) -->
+    <header class="report-header">
+      <h1>킥보드 신고</h1>
+      <p class="report-subtitle">지도에서 위치를 선택하고, 신고 유형을 입력하세요.</p>
+    </header>
+
+    <!-- 신고 폼 영역 (필성님 메인 파트) -->
+    <section class="report-panel" id="report-panel">
+      <h2 class="section-title">킥보드 신고하기</h2>
+
+      <!-- 위치 정보: 마커 클릭 또는 GPS 버튼 클릭 시 자동 채움 (사용자는 직접 수정 불가) -->
+      <div class="form-row">
+        <label class="form-label" for="report-location-input">위치</label>
+        <div class="location-row">
+          <input
+            id="report-location-input"
+            type="text"
+            class="form-input"
+            placeholder="지도에서 위치를 선택하거나 GPS 버튼을 눌러주세요"
+            readonly
+          />
+          <button type="button" class="btn-ghost" id="btn-current-location">
+            현재 위치
+          </button>
+          <button type="button" class="btn-ghost" id="btn-location-reset">
+            초기화
+          </button>
+        </div>
+        <p class="location-help-text">
+          마커를 클릭하거나 현재 위치 버튼을 누르면 자동으로 채워집니다. 초기화 버튼으로 비울 수 있습니다.
+        </p>
+      </div>
+
+      <!-- 신고 유형 라디오 -->
+      <div class="form-row">
+        <label class="form-label">신고 유형</label>
+        <div class="form-radios">
+          <label><input type="radio" name="reportType" value="block_crosswalk" checked /> 보행 방해</label>
+          <label><input type="radio" name="reportType" value="block_braille" /> 점자블록 침범</label>
+          <label><input type="radio" name="reportType" value="block_entrance" /> 횡단보도 앞 방치</label>
+          <label><input type="radio" name="reportType" value="etc" /> 기타</label>
+        </div>
+      </div>
+
+      <!-- 기타 사유 -->
+      <div class="form-row">
+        <label class="form-label" for="report-etc">기타 사유</label>
+        <input
+          id="report-etc"
+          type="text"
+          class="form-input"
+          placeholder="직접 입력하세요"
+        />
+      </div>
+
+      <!-- 사진 업로드 -->
+      <div class="form-row">
+        <label class="form-label">사진 첨부</label>
+        <button type="button" class="btn-secondary">사진 업로드</button>
+        <!-- 실제 구현은 input type="file" 숨기고 JS로 연결 -->
+      </div>
+
+      <!-- 신고 버튼 -->
+      <div class="form-row form-actions">
+        <button type="button" class="btn-primary">이 위치 신고하기</button>
+      </div>
+    </section>
+
+    <!-- 올바른 주차 가이드 (섹션만 모양 맞추기. 내용은 guide 담당자와 조정) -->
+    <section class="guide-section">
+      <h2 class="section-title">올바른 주차 가이드</h2>
+      <div class="guide-cards">
+        <article class="guide-card">
+          <img src="images/guide1.png" alt="1. 주차구역에 세우기" />
+          <p>1. 주차구역에 세우기</p>
+        </article>
+        <article class="guide-card">
+          <img src="images/guide2.png" alt="2. 보행로를 방해하지 않기" />
+          <p>2. 보행로를 방해하지 않기</p>
+        </article>
+        <article class="guide-card">
+          <img src="images/guide3.png" alt="3. 가로를 눕히지 않기" />
+          <p>3. 가로를 눕히지 않기</p>
+        </article>
+      </div>
+    </section>
+  </div>
+
+  <!-- 나중에 지도쪽에서 쓸 수 있게 하는 JS 예시 (여기에 들어가 있어도 됨) -->
+  <script>
+    // 팀원이 마커 클릭 시 이 함수를 호출해서 신고창에 정보 채우기
+    function openReportPanel(locationText) {
+      const panel = document.getElementById('report-panel');
+      const locationInput = document.getElementById('report-location-input');
+      if (locationText) {
+        locationInput.value = locationText;
+      }
+      panel.classList.add('is-open'); // CSS에서 열릴 때 스타일 다르게
+    }
+
+    // 필요하면 닫는 함수도 미리 만들어두기
+    function closeReportPanel() {
+      const panel = document.getElementById('report-panel');
+      panel.classList.remove('is-open');
+    }
+
+    // 현재 위치(GPS) 버튼 클릭 시 위치 인풋을 자동으로 채우기
+    function handleCurrentLocationClick() {
+      const locationInput = document.getElementById('report-location-input');
+
+      if (!navigator.geolocation) {
+        alert('이 브라우저에서는 위치 정보를 사용할 수 없습니다.');
+        return;
+      }
+
+      locationInput.value = '현재 위치를 불러오는 중...';
+
+      navigator.geolocation.getCurrentPosition(
+        function (position) {
+          const lat = position.coords.latitude.toFixed(5);
+          const lng = position.coords.longitude.toFixed(5);
+
+          // 실제 서비스에서는 여기에서 지도 API(카카오 등)로 좌표 -> 주소 변환 가능
+          locationInput.value = `위도 ${lat}, 경도 ${lng}`;
+        },
+        function (error) {
+          locationInput.value = '';
+          let message = '위치 정보를 가져오지 못했습니다.';
+
+          switch (error.code) {
+            case error.PERMISSION_DENIED:
+              message = '위치 정보 권한이 거부되었습니다.';
+              break;
+            case error.POSITION_UNAVAILABLE:
+              message = '위치 정보를 사용할 수 없습니다.';
+              break;
+            case error.TIMEOUT:
+              message = '위치 정보 요청이 시간 초과되었습니다.';
+              break;
+          }
+
+          alert(message);
+        }
+      );
+    }
+
+    // 위치 인풋 초기화
+    function handleLocationReset() {
+      const locationInput = document.getElementById('report-location-input');
+      if (locationInput) {
+        locationInput.value = '';
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const gpsButton = document.getElementById('btn-current-location');
+      const resetButton = document.getElementById('btn-location-reset');
+      if (gpsButton) {
+        gpsButton.addEventListener('click', handleCurrentLocationClick);
+      }
+      if (resetButton) {
+        resetButton.addEventListener('click', handleLocationReset);
+      }
+    });
+  </script>
+</body>
+</html>
