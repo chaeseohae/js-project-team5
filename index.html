@@ -19,6 +19,10 @@
     <section class="report-panel" id="report-panel">
       <h2 class="section-title">킥보드 신고하기</h2>
 
+      <div id="report-success" class="report-alert" aria-live="polite">
+        신고가 완료되었습니다.
+      </div>
+
       <!-- 위치 정보: 마커 클릭 또는 GPS 버튼 클릭 시 자동 채움 (사용자는 직접 수정 불가) -->
       <div class="form-row">
         <label class="form-label" for="report-location-input">위치</label>
@@ -74,32 +78,6 @@
       <!-- 신고 버튼 -->
       <div class="form-row form-actions">
         <button type="button" class="btn-primary" id="btn-submit-report">이 위치 신고하기</button>
-      </div>
-    </section>
-
-    <!-- 내가 신고한 내역 -->
-    <section class="report-history" id="report-history">
-      <h2 class="section-title">내 신고 내역</h2>
-
-      <div class="report-filters" id="report-filters">
-        <button type="button" class="report-filter-btn is-active" data-status="all">
-          전체
-        </button>
-        <button type="button" class="report-filter-btn" data-status="pending">
-          접수됨
-        </button>
-        <button type="button" class="report-filter-btn" data-status="processing">
-          처리중
-        </button>
-        <button type="button" class="report-filter-btn" data-status="done">
-          해결완료
-        </button>
-      </div>
-
-      <div id="report-list" class="report-list">
-        <div class="report-card-empty">
-          아직 신고한 내역이 없습니다.
-        </div>
       </div>
     </section>
 

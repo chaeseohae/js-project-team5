@@ -12,8 +12,11 @@ body {
   background: #ffffff;
   min-height: 100vh;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
-  padding: 16px 16px 32px;
+  padding: 24px 16px 24px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* 헤더 */
@@ -47,7 +50,6 @@ body {
   padding: 16px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  margin-bottom: 24px;
 }
 
 /* 나중에 패널 열림/닫힘 효과를 줄 수 있는 클래스 */
@@ -155,13 +157,13 @@ input.form-input[readonly] {
 }
 
 .btn-primary {
-  background: #ff9800;
+  background: #7c3aed;
   color: #fff;
   width: 100%;
 }
 
 .btn-primary:hover {
-  background: #fb8c00;
+  background: #6d28d9;
 }
 
 .btn-secondary {
@@ -177,85 +179,18 @@ input.form-input[readonly] {
   margin-top: 16px;
 }
 
-/* 신고 내역 카드 */
-.report-history {
-  margin-top: 24px;
-}
-
-.report-filters {
-  display: flex;
-  gap: 8px;
-  margin-bottom: 10px;
-}
-
-.report-filter-btn {
-  padding: 6px 10px;
-  font-size: 12px;
-  border-radius: 999px;
-  border: 1px solid #d1d5db;
-  background-color: #ffffff;
-  color: #4b5563;
-  cursor: pointer;
-}
-
-.report-filter-btn.is-active {
-  background-color: #ff9800;
-  border-color: #ff9800;
+.report-alert {
+  display: none;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: #7c3aed;
   color: #ffffff;
-}
-
-.report-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.report-card {
-  border-radius: 8px;
-  border: 1px solid #e5e7eb;
-  padding: 12px 14px;
-  background-color: #ffffff;
   font-size: 13px;
 }
 
-.report-card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 8px;
-}
-
-.report-card-title {
-  font-weight: 600;
-  color: #111827;
-}
-
-.report-card-status {
-  font-size: 11px;
-  padding: 2px 6px;
-  border-radius: 999px;
-  background-color: #fef3c7;
-  color: #92400e;
-}
-
-.report-card-meta {
-  font-size: 12px;
-  color: #6b7280;
-  margin-bottom: 6px;
-}
-
-.report-card-desc {
-  font-size: 13px;
-  color: #374151;
-}
-
-.report-card-empty {
-  font-size: 13px;
-  color: #9ca3af;
-  border: 1px dashed #d1d5db;
-  border-radius: 8px;
-  padding: 10px 12px;
-  background-color: #f9fafb;
+.report-alert.is-visible {
+  display: block;
 }
 
 /* 아주 작은 폰 (가로 360px 이하) */

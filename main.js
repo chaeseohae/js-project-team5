@@ -1,28 +1,3 @@
-// 신고 내역을 저장하는 배열 (초기 더미 데이터 포함)
-const reports = [
-  {
-    id: 1,
-    status: "pending",
-    title: "점자블록 방해 주차",
-    description: "점자블록 위에 공유 킥보드가 방치되어 있어요.",
-    date: "2026-03-01",
-    address: "서울특별시 성동구 성수동",
-    image: null,
-  },
-  {
-    id: 2,
-    status: "done",
-    title: "횡단보도 앞 방치",
-    description: "횡단보도 앞 출입을 가로막고 있던 킥보드가 치워졌습니다.",
-    date: "2026-03-02",
-    address: "서울특별시 마포구 홍익로",
-    image: null,
-  },
-];
-
-let nextReportId = 3;
-let currentReportFilter = "all";
-
 // 팀원이 마커 클릭 시 이 함수를 호출해서 신고창에 정보 채우기
 function openReportPanel(locationText) {
   const panel = document.getElementById("report-panel");
@@ -135,7 +110,7 @@ function handleLocationReset() {
   }
 }
 
-// 현재 폼 상태로부터 신고 객체 하나 만들기
+// 현재 폼 상태로부터 신고 객체 하나 만들기 (id는 나중에 부여)
 function buildReportFromForm() {
   const locationInput = document.getElementById("report-location-input");
   const etcInput = document.getElementById("report-etc");
@@ -144,12 +119,11 @@ function buildReportFromForm() {
   );
 
   const now = new Date();
-  const dateString = `${now.getFullYear()}-${String(
+  const dateString = `${now.getFullYear()}.${String(
     now.getMonth() + 1
-  ).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+  ).padStart(2, "0")}.${String(now.getDate()).padStart(2, "0")}`;
 
   return {
-    id: nextReportId++,
     status: "pending",
     title: selectedType ? selectedType.nextSibling.textContent.trim() : "",
     description: etcInput ? etcInput.value : "",
@@ -159,7 +133,24 @@ function buildReportFromForm() {
   };
 }
 
-// "이 위치 신고하기" 버튼 클릭 시 신고 데이터를 reports 배열에 추가
+// 로컬스토리지에서 신고 내역 불러오기
+function loadReportsFromStorage() {
+  try {
+    const stored = localStorage.getItem("reports");
+    if (!stored) return [];
+    const parsed = JSON.parse(stored);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+// 로컬스토리지에 신고 내역 저장
+function saveReportsToStorage(list) {
+  localStorage.setItem("reports", JSON.stringify(list));
+}
+
+// "이 위치 신고하기" 버튼 클릭 시 신고 데이터를 저장
 function handleSubmitReport() {
   const locationInput = document.getElementById("report-location-input");
   if (!locationInput || !locationInput.value) {
@@ -168,83 +159,44 @@ function handleSubmitReport() {
   }
 
   const newReport = buildReportFromForm();
+  const reports = loadReportsFromStorage();
+
+  const nextId =
+    reports.length > 0
+      ? Math.max(...reports.map((r) => (typeof r.id === "number" ? r.id : 0))) +
+        1
+      : 1;
+
+  newReport.id = nextId;
   reports.push(newReport);
+  saveReportsToStorage(reports);
 
-  renderReports(currentReportFilter);
-  alert("신고가 접수되었습니다.");
-}
+  // 폼 초기화
+  locationInput.value = "";
+  const etcInput = document.getElementById("report-etc");
+  if (etcInput) {
+    etcInput.value = "";
+  }
+  const typeRadios = document.querySelectorAll('input[name="reportType"]');
+  typeRadios.forEach((radio) => {
+    radio.checked = radio.value === "block_crosswalk";
+  });
 
-// reports 배열을 상태 필터에 맞춰 여러 장의 카드로 렌더링
-function renderReports(filterStatus) {
-  const list = document.getElementById("report-list");
-  if (!list) return;
-
-  const effectiveFilter = filterStatus && filterStatus !== "all" ? filterStatus : "all";
-  currentReportFilter = effectiveFilter;
-
-  const filtered =
-    effectiveFilter === "all"
-      ? reports
-      : reports.filter((report) => report.status === effectiveFilter);
-
-  if (!filtered.length) {
-    list.innerHTML = `
-      <div class="report-card-empty">
-        아직 해당 상태의 신고 내역이 없습니다.
-      </div>
-    `;
-    return;
+  const success = document.getElementById("report-success");
+  if (success) {
+    success.classList.add("is-visible");
+    setTimeout(() => {
+      success.classList.remove("is-visible");
+    }, 3000);
   }
 
-  const cardsHtml = filtered
-    .map((report) => {
-      const statusLabel =
-        report.status === "pending"
-          ? "접수됨"
-          : report.status === "processing"
-          ? "처리중"
-          : report.status === "done"
-          ? "해결완료"
-          : report.status;
-
-      return `
-        <article class="report-card">
-          <div class="report-card-header">
-            <div class="report-card-title">${report.title || "신고 내역"}</div>
-            <span class="report-card-status">${statusLabel}</span>
-          </div>
-          <div class="report-card-meta">
-            ${report.date || ""} · ${report.address || "위치 정보 없음"}
-          </div>
-          <div class="report-card-desc">
-            ${report.description || "작성된 상세 내용이 없습니다."}
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-
-  list.innerHTML = cardsHtml;
-}
-
-// 상태 필터 버튼의 활성 상태를 업데이트
-function updateFilterButtons(activeStatus) {
-  const buttons = document.querySelectorAll(".report-filter-btn");
-  buttons.forEach((btn) => {
-    const status = btn.getAttribute("data-status") || "all";
-    if (status === activeStatus) {
-      btn.classList.add("is-active");
-    } else {
-      btn.classList.remove("is-active");
-    }
-  });
+  console.log("신고가 저장되었습니다.", newReport);
 }
 
 document.addEventListener("DOMContentLoaded", function () {
   const gpsButton = document.getElementById("btn-current-location");
   const resetButton = document.getElementById("btn-location-reset");
   const submitButton = document.getElementById("btn-submit-report");
-  const filterButtons = document.querySelectorAll(".report-filter-btn");
 
   if (gpsButton) {
     gpsButton.addEventListener("click", handleCurrentLocationClick);
@@ -257,20 +209,5 @@ document.addEventListener("DOMContentLoaded", function () {
   if (submitButton) {
     submitButton.addEventListener("click", handleSubmitReport);
   }
-
-  if (filterButtons.length) {
-    filterButtons.forEach((btn) => {
-      btn.addEventListener("click", function () {
-        const status = btn.getAttribute("data-status") || "all";
-        currentReportFilter = status;
-        updateFilterButtons(status);
-        renderReports(status);
-      });
-    });
-  }
-
-  // 페이지 진입 시 전체 필터 기준으로 신고 리스트 렌더링
-  updateFilterButtons("all");
-  renderReports("all");
 });
 
