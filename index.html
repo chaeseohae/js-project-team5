@@ -69,11 +69,25 @@
       </div>
 
       <!-- 사진 업로드 -->
-      <div class="form-row">
-        <label class="form-label">사진 첨부</label>
-        <button type="button" class="btn-secondary">사진 업로드</button>
-        <!-- 실제 구현은 input type="file" 숨기고 JS로 연결 -->
-      </div>
+     <div class="form-row">
+      <label class="form-label">사진 첨부</label>
+
+     <!-- 숨겨진 파일 입력 -->
+     <input
+       id="report-image"
+       type="file"
+       accept="image/*"
+       style="display: none"
+     />
+
+     <!-- 사용자가 누르는 버튼 -->
+     <button type="button" class="btn-secondary" id="btn-upload-image">
+       사진 업로드
+     </button>
+
+     <!-- 선택한 파일명 표시용 (옵션) -->
+     <span id="report-image-name" class="image-name-text"></span>
+     </div>
 
       <!-- 신고 버튼 -->
       <div class="form-row form-actions">
