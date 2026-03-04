@@ -5,45 +5,109 @@ body {
 }
 
 h1 {
+    font-size: 22px;
+    font-weight: bold;
     margin-top: 20px;
-    margin-bottom: 30px;
+    margin-bottom: 24px;
 }
 
-.parking-do {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+.side-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 420px;
+    min-width: 360px;
+    height: 100vh;
+    background: #fff;
+    z-index: 900;
+    /* transform: translateX(-100%); */  /* 버튼 누르기 전까진 안보임 */
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 12px rgba(0,0,0,0.15);
+    overflow-y: auto;
+
 }
 
-.parking-dont {
-    display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+.guide-section {
+    margin-bottom: 28px;
 }
 
-.card {
-    margin: 10px;
-    border: none;
+.guide-section h3 {
+  font-size: 18px;
+  margin-bottom: 12px;
 }
 
-.card-img-top {
-    border-radius: 5px;
+.guide-section:not(:last-child) {
+    border-bottom: 1px solid #eee;
+    padding-bottom: 24px;
+}
+
+.guide-section.do h3 {
+  color: #2e8b57;
+}
+
+.guide-section.dont h3 {
+  color: #d9534f;
+}
+
+.guide-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  padding: 15px 0;
+  margin: 10px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  background: #f9f9f9;
+}
+
+.guide-section.dont .guide-card {
+  background: #fff5f5;
+}
+
+.guide-card img {
+  width: 80%;
+  height: 80%;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.guide-card p {
+  font-size: 15px;
+  line-height: 1.4;
+  margin: 0;
 }
 
 
+.side-panel::-webkit-scrollbar {
+  width: 6px;
+}
 
+.side-panel::-webkit-scrollbar-track {
+  background-color: transparent;
+}
 
+.side-panel::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background-color: rgb(168, 168, 168);
+}
 
-
-
-
+.side-panel::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+}
 
 
 
 
 
 @media screen and (max-width: 48rem) {
-
+    .side-panel {
+        width: 100%;
+        transform: translateX(0);
+        box-shadow: none;
+    }
 
 
 }

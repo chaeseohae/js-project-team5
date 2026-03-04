@@ -8,16 +8,16 @@
     <link rel="stylesheet" href="my-reports.css">
 </head>
 <body>
-    <div class="container">
+    <div class="side-panel">
         <h1>나의 신고내역</h1>
         <div class="reports-wrapper">
             <div class="status-filter">
-                <button class="filter-btn active" data-status="all">전체</button>
-                <button class="filter-btn" data-status="pending">신고 중</button>
-                <button class="filter-btn" data-status="processing">처리 중</button>
-                <button class="filter-btn" data-status="completed">처리 완료</button>
+                <button class="filter-btn active" data-status="all" data-label="전체">전체</button>
+                <button class="filter-btn" data-status="pending" data-label="신고 접수">신고 접수</button>
+                <button class="filter-btn" data-status="processing" data-label="처리 중">처리 중</button>
+                <button class="filter-btn" data-status="completed" data-label="처리 완료">처리 완료</button>
             </div>
-            
+
 
             <div class="my-reports-container">
                 <!-- <p>신고 내역이 없습니다.</p> -->
