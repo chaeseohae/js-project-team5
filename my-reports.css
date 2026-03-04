@@ -3,35 +3,123 @@ body {
     font-family: sans-serif;
 }
 
+.side-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 420px;
+    min-width: 360px;
+    height: 100vh;
+    background: #fff;
+    z-index: 900;
+    /* transform: translateX(-100%); */  /* 버튼 누르기 전까진 안보임 */
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 12px rgba(0,0,0,0.15);
+    overflow-y: auto;
+}
+
 h1 {
-    margin: 20px 0 30px 0;
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 24px;
     text-align: center;
 }
 
 .reports-wrapper {
-    max-width: 900px;
-    margin: 0 auto;
+    max-width: 500px;
+    margin: 0 10px;
 }
 
 .status-filter {
-    margin-bottom: 10px;
+    margin-bottom: 20px;
 }
 
 .filter-btn {
-    background: none;
-    background-color: #f5f5f5;
+    color: #000000;
+    background-color: #fff;
     border: none;
-    padding: 6px 18px;
+    padding: 6px 10px;
     margin-right: 5px;
-    border-radius: 3px;
+    border-radius: 10px;
     cursor: pointer;
-    /* font-size: 14px; */
-    /* font-weight: 500; */
+    font-size: 14px;
+    box-shadow: 0 1px 3px rgba(160, 77, 255, 0.25);
+    transition: 
+        background-color 0.15s ease,
+        color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.12s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* 전체 버튼 뱃지 */
+[data-status="all"] .count-badge {
+    background-color: #e8d5ff;
+    color: #a04dff;
+}
+
+/* 신고 중 뱃지 */
+[data-status="pending"] .count-badge {
+    background-color: #eeeeee;
+    color: #616161;
+}
+
+/* 처리 중 뱃지 */
+[data-status="processing"] .count-badge {
+    background-color: #fff3e0;
+    color: #ef6c00;
+}
+
+/* 처리 완료 뱃지 */
+[data-status="completed"] .count-badge {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+/* 활성화 시 뱃지 색 유지, 약간 진하게 */
+.filter-btn.active [data-status="all"] .count-badge,
+.filter-btn[data-status="all"].active .count-badge {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+
+
+
+
+.filter-btn.active .count-badge {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
 }
 
 .filter-btn.active {
-    border: 1px solid green;
-    color: green;
+    background-color: #a04dff;
+    color: #fff;
+    box-shadow:
+        0 4px 10px rgba(160, 77, 255, 0.3),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    transform: translateY(1px);
+}
+
+.filter-btn:hover:not(.active) {
+    background-color: #f6f1ff;
+    box-shadow: 0 2px 6px rgba(160, 77, 255, 0.35);
 }
 
 .my-reports-container {
@@ -47,7 +135,7 @@ h1 {
 }
 
 .card {
-    width: 600px;
+    /* width: 90%; */
     border-radius: 7px;
     margin-bottom: 20px;
     border: none;
@@ -81,7 +169,6 @@ h1 {
     margin-bottom: 10px;
 }
 
-
 .status-pending .report-status {
     background-color: #eeeeee;
     color: #616161;
@@ -96,14 +183,70 @@ h1 {
     background-color: #e8f5e9;
     color: #2e7d32;
 }
+
 .report-title {
     font-size: 18px;
-    margin-bottom: 5px;
+    margin-bottom: 20px;
 }
 
 .report-desc {
     margin-bottom: 20px;
 }
+
+.report-bottom {
+    font-size: 13px;
+    color: #7e7e7e;
+    font-weight: 00;
+}
+
+.cancel-btn {
+    align-self: flex-end;
+    margin-top: auto;
+    margin-left: 55px;
+    background-color: transparent;
+    color: #aaaaaa;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    padding: 4px 12px;
+    font-size: 12px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.cancel-btn:hover {
+    background-color: #fff0f0;
+    color: #e53935;
+    border-color: #e53935;
+}
+
+.empty-message {
+    font-size: 14px;
+    color: #aaaaaa;
+    text-align: center;
+    padding: 30px 0;
+}
+
+.side-panel::-webkit-scrollbar {
+  width: 6px;
+}
+
+.side-panel::-webkit-scrollbar-track {
+  background-color: transparent;
+}
+
+.side-panel::-webkit-scrollbar-thumb {
+  border-radius: 3px;
+  background-color: rgb(168, 168, 168);
+}
+
+.side-panel::-webkit-scrollbar-button {
+  width: 0;
+  height: 0;
+}
+
 
 @media screen and (max-width: 48rem) {
     .card {

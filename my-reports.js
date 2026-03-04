@@ -8,19 +8,20 @@ filterButtons.forEach(button => {
     filterButtons.forEach(btn => btn.classList.remove('active'));
     button.classList.add('active');
 
-    // 데이터 필터링
-    const filtered =
-      status === 'all'
-        ? reports
-        : reports.filter(report => report.status === status);
-
-    renderReports(filtered);
+    currentFilter = status;
+    renderReports();
   });
 });
 
+// function loadReports() {
+//   return [ /* 기존 하드코딩 배열 */ ];
+// }
 
+// function saveReports() {}
 
-const reports = [
+// let reports = loadReports(); // 기존 let reports = [...] 를 이걸로 교체
+
+let reports = [
   {
     id: 1,
     status: 'pending',
@@ -50,28 +51,79 @@ const reports = [
   }
 ];
 
+// 현재 필터 상태 추적
+let currentFilter = 'all';
+
 function statusText(status) {
   switch (status) {
-    case 'pending': return '신고 중';
+    case 'pending': return '신고 접수';
     case 'processing': return '처리 중';
     case 'completed': return '처리 완료';
     default: return '';
   }
 }
 
+// 빈 상태 메시지 - 필터별 분기
+function emptyMessage(status) {
+  switch (status) {
+    case 'pending': return '신고 내역이 없습니다.';
+    case 'processing': return '처리 중인 내역이 없습니다.';
+    case 'completed': return '처리 완료된 내역이 없습니다.';
+    default: return '신고 내역이 없습니다.';
+  }
+}
+
+// 신고 취소 함수
+function cancelReport(id) {
+  const confirmed = confirm('신고를 취소하시겠습니까?');
+  if (!confirmed) return;
+
+  reports = reports.filter(report => report.id !== id);
+  renderReports();
+}
+
 const container = document.querySelector('.my-reports-container');
 
-function renderReports(list) {
+// 신고 건수 뱃지 함수
+function updateBadges() {
+  filterButtons.forEach(btn => {
+    const status = btn.dataset.status;
+    const count = status === 'all'
+      ? reports.length
+      : reports.filter(r => r.status === status).length;
+
+    // 기존 뱃지 제거 후 재생성
+    const existing = btn.querySelector('.count-badge');
+    if (existing) existing.remove();
+
+    const badge = document.createElement('span');
+    badge.className = 'count-badge';
+    badge.textContent = count;
+    btn.appendChild(badge);
+  });
+}
+
+const renderReports = () => {
+  const filtered =
+    currentFilter === 'all'
+      ? reports
+      : reports.filter(report => report.status === currentFilter);
+
   container.innerHTML = '';
 
-  if (list.length === 0) {
-    container.innerHTML = `<p class="text-muted">신고 내역이 없습니다.</p>`;
+  if (filtered.length === 0) {
+    container.innerHTML = `<p class="text-muted empty-message">${emptyMessage(currentFilter)}</p>`;
     return;
   }
 
-  list.forEach(report => {
+  filtered.forEach(report => {
     const card = document.createElement('div');
     card.className = `card status-${report.status}`;
+
+    // 신고 취소 버튼은 'pending' 상태일 때만 표시
+    const cancelBtn = report.status === 'pending'
+      ? `<button class="cancel-btn" onclick="cancelReport(${report.id})">신고 취소</button>`
+      : '';
 
     card.innerHTML = `
       <div class="row g-0">
@@ -81,14 +133,10 @@ function renderReports(list) {
         <div class="col-12 col-md-8">
           <div class="card-body">
             <div class="report-status">${statusText(report.status)}</div>
+            ${cancelBtn}
             <div class="fw-semibold report-title">${report.title}</div>
-            <div class="text-muted small report-desc">
-              ${report.description}
-            </div>
-            <div class="d-flex gap-2 text-muted small">
-              <span>${report.date}</span>
-              <span>${report.address}</span>
-            </div>
+            <div class="report-bottom">${report.address}</div>
+            <div class="report-bottom">${report.date}</div>
           </div>
         </div>
       </div>
@@ -96,6 +144,8 @@ function renderReports(list) {
 
     container.appendChild(card);
   });
+
+  updateBadges();
 }
 
-renderReports(reports);
+renderReports();
