@@ -12,8 +12,11 @@ body {
   background: #ffffff;
   min-height: 100vh;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
-  padding: 16px 16px 32px;
+  padding: 24px 16px 24px;
   box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 
 /* 헤더 */
@@ -25,7 +28,7 @@ body {
 .report-header h1 {
   margin: 0;
   font-size: 20px;
-  color: #1976d2;
+  color: black;
 }
 
 .report-subtitle {
@@ -47,7 +50,6 @@ body {
   padding: 16px;
   background: #f9fafb;
   border: 1px solid #e5e7eb;
-  margin-bottom: 24px;
 }
 
 /* 나중에 패널 열림/닫힘 효과를 줄 수 있는 클래스 */
@@ -155,13 +157,13 @@ input.form-input[readonly] {
 }
 
 .btn-primary {
-  background: #ff9800;
+  background: #7c3aed;
   color: #fff;
   width: 100%;
 }
 
 .btn-primary:hover {
-  background: #fb8c00;
+  background: #6d28d9;
 }
 
 .btn-secondary {
@@ -177,36 +179,18 @@ input.form-input[readonly] {
   margin-top: 16px;
 }
 
-/* 가이드 섹션 */
-.guide-section {
-  margin-top: 8px;
-}
-
-.guide-cards {
-  display: flex;
-  gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 8px;
-}
-
-.guide-card {
-  min-width: 140px;
+.report-alert {
+  display: none;
+  margin-bottom: 12px;
+  padding: 8px 12px;
   border-radius: 6px;
-  border: 1px solid #e5e7eb;
-  background: #fff;
-  overflow: hidden;
-  text-align: center;
-  font-size: 12px;
+  background-color: #7c3aed;
+  color: #ffffff;
+  font-size: 13px;
 }
 
-.guide-card img {
-  width: 100%;
-  height: 80px;
-  object-fit: cover;
-}
-
-.guide-card p {
-  margin: 4px 6px 8px;
+.report-alert.is-visible {
+  display: block;
 }
 
 /* 아주 작은 폰 (가로 360px 이하) */
@@ -221,10 +205,6 @@ input.form-input[readonly] {
 
   .section-title {
     font-size: 15px;
-  }
-
-  .guide-card {
-    min-width: 120px;
   }
 }
 
@@ -255,15 +235,6 @@ input.form-input[readonly] {
     margin: 24px auto;
     border-radius: 12px;
     box-shadow: 0 10px 24px rgba(15, 23, 42, 0.15);
-  }
-
-  .guide-cards {
-    justify-content: space-between;
-  }
-
-  .guide-card {
-    flex: 1;
-    min-width: 0;
   }
 }
 

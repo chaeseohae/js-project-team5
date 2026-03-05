@@ -52,12 +52,25 @@ let reports = [
   }
 ];
 
-// 현재 필터 상태 추적
-let currentFilter = 'all';
+function loadReportsFromStorage() {
+  try {
+    const stored = localStorage.getItem('reports');
+    if (!stored) return defaultReports;
+    const parsed = JSON.parse(stored);
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return parsed;
+    }
+    return defaultReports;
+  } catch (e) {
+    return defaultReports;
+  }
+}
+
+const reports = loadReportsFromStorage();
 
 function statusText(status) {
   switch (status) {
-    case 'pending': return '신고 접수';
+    case 'pending': return '신고 중';
     case 'processing': return '처리 중';
     case 'completed': return '처리 완료';
     default: return '';
@@ -86,46 +99,17 @@ function cancelReport(id) {
 
 const container = document.querySelector('.my-reports-container');
 
-// 신고 건수 뱃지 함수
-function updateBadges() {
-  filterButtons.forEach(btn => {
-    const status = btn.dataset.status;
-    const count = status === 'all'
-      ? reports.length
-      : reports.filter(r => r.status === status).length;
-
-    // 기존 뱃지 제거 후 재생성
-    const existing = btn.querySelector('.count-badge');
-    if (existing) existing.remove();
-
-    const badge = document.createElement('span');
-    badge.className = 'count-badge';
-    badge.textContent = count;
-    btn.appendChild(badge);
-  });
-}
-
-const renderReports = () => {
-  const filtered =
-    currentFilter === 'all'
-      ? reports
-      : reports.filter(report => report.status === currentFilter);
-
+function renderReports(list) {
   container.innerHTML = '';
 
-  if (filtered.length === 0) {
-    container.innerHTML = `<p class="text-muted empty-message">${emptyMessage(currentFilter)}</p>`;
+  if (list.length === 0) {
+    container.innerHTML = `<p class="text-muted">신고 내역이 없습니다.</p>`;
     return;
   }
 
-  filtered.forEach(report => {
+  list.forEach(report => {
     const card = document.createElement('div');
     card.className = `card status-${report.status}`;
-
-    // 신고 취소 버튼은 'pending' 상태일 때만 표시
-    const cancelBtn = report.status === 'pending'
-      ? `<button class="cancel-btn" onclick="cancelReport(${report.id})">신고 취소</button>`
-      : '';
 
     card.innerHTML = `
       <div class="row g-0">
@@ -135,10 +119,14 @@ const renderReports = () => {
         <div class="col-12 col-md-8">
           <div class="card-body">
             <div class="report-status">${statusText(report.status)}</div>
-            ${cancelBtn}
             <div class="fw-semibold report-title">${report.title}</div>
-            <div class="report-bottom">${report.address}</div>
-            <div class="report-bottom">${report.date}</div>
+            <div class="text-muted small report-desc">
+              ${report.description}
+            </div>
+            <div class="d-flex gap-2 text-muted small">
+              <span>${report.date}</span>
+              <span>${report.address}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -146,8 +134,26 @@ const renderReports = () => {
 
     container.appendChild(card);
   });
-
-  updateBadges();
 }
 
-renderReports();
+renderReports(reports);
+
+const filterButtons = document.querySelectorAll('.filter-btn');
+
+filterButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const status = button.dataset.status;
+
+    // 버튼 active 처리
+    filterButtons.forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+
+    // 데이터 필터링
+    const filtered =
+      status === 'all'
+        ? reports
+        : reports.filter(report => report.status === status);
+
+    renderReports(filtered);
+  });
+});
