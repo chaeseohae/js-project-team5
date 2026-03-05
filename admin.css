@@ -1,34 +1,41 @@
 body {
+    margin: 0;
     font-family: sans-serif;
 }
 
 h1 {
-   font-size: 24px; 
-   margin: 20px 10px;
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 24px;
+    text-align: center;
 }
 
 /* ─── 필터 탭 ─── */
 .admin-filter {
     display: flex;
     gap: 6px;
-    margin-bottom: 16px;
     flex-wrap: wrap;
+    margin: 0 10px 20px;
 }
 
 .admin-filter-btn {
     color: #000;
     background-color: #fff;
     border: none;
-    padding: 5px 12px;
+    padding: 6px 10px;
+    margin-right: 5px;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 14px;
     box-shadow: 0 1px 3px rgba(160, 77, 255, 0.25);
     transition:
         background-color 0.15s ease,
         color 0.15s ease,
         box-shadow 0.15s ease,
         transform 0.12s ease;
+    display: inline-flex;
+    align-items: center;
 }
 
 .admin-filter-btn.active {
@@ -43,6 +50,45 @@ h1 {
 .admin-filter-btn:hover:not(.active) {
     background-color: #f6f1ff;
     box-shadow: 0 2px 6px rgba(160, 77, 255, 0.35);
+}
+
+/* ─── 뱃지 ─── */
+.admin-filter .count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+[data-filter="all"] .count-badge {
+    background-color: #e8d5ff;
+    color: #a04dff;
+}
+
+[data-filter="pending"] .count-badge {
+    background-color: #eeeeee;
+    color: #616161;
+}
+
+[data-filter="processing"] .count-badge {
+    background-color: #fff3e0;
+    color: #ef6c00;
+}
+
+[data-filter="completed"] .count-badge {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.admin-filter-btn.active .count-badge {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
 }
 
 /* ─── 페이지네이션 ─── */
@@ -78,7 +124,7 @@ h1 {
 /* ─── 숨겨진 관리자 버튼 ─── */
 #hiddenAdminBtn {
     position: fixed;
-    bottom: 20px;   /* zoom-control 아래쪽 */
+    bottom: 20px;
     right: 20px;
     width: 40px;
     height: 40px;
@@ -102,6 +148,7 @@ h1 {
     transition: transform 0.3s ease;
     box-shadow: 4px 0 12px rgba(0,0,0,0.15);
     overflow-y: auto;
+    overflow-x: hidden;
 }
 
 .admin-panel.open {
@@ -121,6 +168,10 @@ h1 {
     font-weight: bold;
     margin: 0;
     text-align: left;
+    /* my-reports.css 전역 h1 스타일 덮어씌우기 */
+    margin-top: 0;
+    margin-bottom: 0;
+    text-align: left;
 }
 
 .admin-close-btn {
@@ -138,12 +189,20 @@ h1 {
 }
 
 .admin-body {
-    padding: 0 16px 40px;
+    background-color: #f5f5f5;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 0 10px 20px;
 }
-
 #adminBody {
-    margin: 0 10px 30px;
-
+    /* background-color: #f5f5f5;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 20px; */
 }
 
 /* ─── 카드 ─── */
@@ -189,9 +248,9 @@ h1 {
     margin-bottom: 4px;
 }
 
-.admin-card.status-pending .admin-report-status { background: #eee; color: #616161; }
+.admin-card.status-pending .admin-report-status   { background: #eee; color: #616161; }
 .admin-card.status-processing .admin-report-status { background: #fff3e0; color: #ef6c00; }
-.admin-card.status-completed .admin-report-status { background: #e8f5e9; color: #2e7d32; }
+.admin-card.status-completed .admin-report-status  { background: #e8f5e9; color: #2e7d32; }
 
 .admin-card-title {
     font-size: 14px;
@@ -265,3 +324,12 @@ h1 {
 .admin-panel::-webkit-scrollbar-track { background: transparent; }
 .admin-panel::-webkit-scrollbar-thumb { border-radius: 3px; background: #c8c8c8; }
 .admin-panel::-webkit-scrollbar-button { width: 0; height: 0; }
+
+
+
+@media screen and (max-width: 48rem) {
+    .admin-card {
+        width: auto;
+    }
+
+}

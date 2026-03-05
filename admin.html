@@ -9,7 +9,20 @@
 </head>
 <body>
     <h1>관리자 페이지</h1>
-    <div id="adminBody"></div>
+
+    <!-- 필터 탭 -->
+    <div class="admin-filter" id="adminFilter">
+        <button class="admin-filter-btn active" data-filter="all">전체</button>
+        <button class="admin-filter-btn" data-filter="pending">신고 접수</button>
+        <button class="admin-filter-btn" data-filter="processing">처리 중</button>
+        <button class="admin-filter-btn" data-filter="completed">처리 완료</button>
+    </div>
+
+    <!-- 카드 목록 -->
+     <div style="margin: 0 10px;">
+         <div id="adminBody"></div>
+     </div>
+
     <script src="admin.js"></script>
 </body>
 </html>
