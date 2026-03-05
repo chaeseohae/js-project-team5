@@ -5,24 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>관리자 페이지</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="map.css">
     <link rel="stylesheet" href="admin.css">
-    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=1f489101c4804d0ce2dcf5da6a8cec2e"></script>
 </head>
-
 <body>
-    <!-- 숨겨진 관리자 버튼 (줌 버튼 아래) -->
-    <button id="hiddenAdminBtn"></button>
-
-    <!-- 관리자 사이드패널 -->
-    <div class="admin-panel" id="adminPanel">
-        <div class="admin-panel-header">
-            <h1>관리자 페이지</h1>
-            <button class="admin-close-btn" id="adminCloseBtn">✕</button>
-        </div>
-        <div class="admin-body" id="adminBody"></div>
-    </div>
-
+    <h1>관리자 페이지</h1>
+    <div id="adminBody"></div>
     <script src="admin.js"></script>
 </body>
 </html>

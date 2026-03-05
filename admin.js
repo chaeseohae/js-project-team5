@@ -14,7 +14,7 @@ let adminReports = [
   { id: 12, status: 'completed',  title: '공원 내 방치',       description: '공원 내 통행로에 킥보드 방치',        date: '2026.02.19', address: '서울시 관악구',       image: 'images/dont1.jpg' },
 ];
 
-const ADMIN_PAGE_SIZE = 5;
+const ADMIN_PAGE_SIZE = 10;
 let adminCurrentFilter = 'all';
 let adminCurrentPage = 1;
 
@@ -27,22 +27,12 @@ function adminStatusText(status) {
   }
 }
 
-// ─── 패널 열기/닫기 ───
-function openAdmin() {
-  adminCurrentFilter = 'all';
-  adminCurrentPage = 1;
-  renderAdmin();
-  document.getElementById('adminPanel').classList.add('open');
+// ─── map.html에서만 동작 (hiddenAdminBtn) ───
+if (document.getElementById('hiddenAdminBtn')) {
+  document.getElementById('hiddenAdminBtn').addEventListener('click', () => {
+    openSlide("../admin.html");
+  });
 }
-
-document.getElementById('adminCloseBtn').addEventListener('click', () => {
-  document.getElementById('adminPanel').classList.remove('open');
-});
-
-// ─── 숨겨진 버튼 클릭 ───
-document.getElementById('hiddenAdminBtn').addEventListener('click', () => {
-  openAdmin();
-});
 
 // ─── 필터링된 목록 반환 ───
 function getFilteredReports() {
@@ -54,6 +44,7 @@ function getFilteredReports() {
 // ─── 렌더링 ───
 function renderAdmin() {
   const body = document.getElementById('adminBody');
+  if (!body) return;
   body.innerHTML = '';
 
   // 필터 탭
@@ -67,7 +58,6 @@ function renderAdmin() {
   `;
   body.appendChild(filterArea);
 
-  // 필터 버튼 이벤트
   filterArea.querySelectorAll('.admin-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       adminCurrentFilter = btn.dataset.filter;
@@ -88,7 +78,6 @@ function renderAdmin() {
   const start = (adminCurrentPage - 1) * ADMIN_PAGE_SIZE;
   const paginated = filtered.slice(start, start + ADMIN_PAGE_SIZE);
 
-  // 카드 렌더링
   paginated.forEach(report => {
     const card = document.createElement('div');
     card.className = `admin-card status-${report.status}`;
@@ -106,7 +95,7 @@ function renderAdmin() {
       </div>
       <div class="admin-card-actions">
         <select class="status-select" id="admin-select-${report.id}">
-          <option value="" disabled selected>처리 상태를 선택하세요</option>
+          <option value="" disabled selected>처리상태를 선택하세요</option>
           <option value="pending">신고 접수</option>
           <option value="processing">처리 중</option>
           <option value="completed">처리 완료</option>
@@ -129,8 +118,7 @@ function renderAdmin() {
       btn.addEventListener('click', () => {
         adminCurrentPage = i;
         renderAdmin();
-        // 패널 스크롤 맨 위로
-        document.getElementById('adminPanel').scrollTop = 0;
+        window.scrollTo(0, 0);
       });
       pagination.appendChild(btn);
     }
@@ -154,3 +142,6 @@ function updateAdminStatus(id) {
     renderAdmin();
   }
 }
+
+// ─── 페이지 로드 시 렌더링 ───
+renderAdmin();

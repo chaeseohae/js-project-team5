@@ -1,3 +1,12 @@
+body {
+    font-family: sans-serif;
+}
+
+h1 {
+   font-size: 24px; 
+   margin: 20px 10px;
+}
+
 /* ─── 필터 탭 ─── */
 .admin-filter {
     display: flex;
@@ -132,6 +141,11 @@
     padding: 0 16px 40px;
 }
 
+#adminBody {
+    margin: 0 10px 30px;
+
+}
+
 /* ─── 카드 ─── */
 .admin-card {
     background: #fff;
@@ -175,9 +189,9 @@
     margin-bottom: 4px;
 }
 
-.admin-card.status-pending .admin-report-status   { background: #eee; color: #616161; }
+.admin-card.status-pending .admin-report-status { background: #eee; color: #616161; }
 .admin-card.status-processing .admin-report-status { background: #fff3e0; color: #ef6c00; }
-.admin-card.status-completed .admin-report-status  { background: #e8f5e9; color: #2e7d32; }
+.admin-card.status-completed .admin-report-status { background: #e8f5e9; color: #2e7d32; }
 
 .admin-card-title {
     font-size: 14px;
