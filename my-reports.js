@@ -1,4 +1,28 @@
-const defaultReports = [
+const filterButtons = document.querySelectorAll('.filter-btn');
+
+filterButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    const status = button.dataset.status;
+
+    // 버튼 active 처리
+    filterButtons.forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+
+    currentFilter = status;
+    renderReports();
+  });
+});
+
+// function loadReports() {
+//   return [ /* 기존 하드코딩 배열 */ ];
+// }
+
+// function saveReports() {}
+
+// let reports = loadReports(); // 기존 let reports = [...] 를 이걸로 교체
+
+
+let reports = [
   {
     id: 1,
     status: 'pending',
@@ -51,6 +75,26 @@ function statusText(status) {
     case 'completed': return '처리 완료';
     default: return '';
   }
+}
+
+// 빈 상태 메시지 - 필터별 분기
+function emptyMessage(status) {
+  switch (status) {
+    case 'pending': return '신고 내역이 없습니다.';
+    case 'processing': return '처리 중인 내역이 없습니다.';
+    case 'completed': return '처리 완료된 내역이 없습니다.';
+    default: return '신고 내역이 없습니다.';
+  }
+}
+
+
+// 신고 취소 함수
+function cancelReport(id) {
+  const confirmed = confirm('신고를 취소하시겠습니까?');
+  if (!confirmed) return;
+
+  reports = reports.filter(report => report.id !== id);
+  renderReports();
 }
 
 const container = document.querySelector('.my-reports-container');
