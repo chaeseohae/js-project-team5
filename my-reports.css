@@ -12,7 +12,7 @@ body {
     height: 100vh;
     background: #fff;
     z-index: 900;
-    /* transform: translateX(-100%); */  /* 버튼 누르기 전까진 안보임 */
+    transform: translateX(-100%);  /* 버튼 누르기 전까진 안보임 */
     transition: transform 0.3s ease;
     box-shadow: 4px 0 12px rgba(0,0,0,0.15);
     overflow-y: auto;
