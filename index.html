@@ -19,6 +19,10 @@
     <section class="report-panel" id="report-panel">
       <h2 class="section-title">킥보드 신고하기</h2>
 
+      <div id="report-success" class="report-alert" aria-live="polite">
+        신고가 완료되었습니다.
+      </div>
+
       <!-- 위치 정보: 마커 클릭 또는 GPS 버튼 클릭 시 자동 채움 (사용자는 직접 수정 불가) -->
       <div class="form-row">
         <label class="form-label" for="report-location-input">위치</label>
@@ -65,36 +69,32 @@
       </div>
 
       <!-- 사진 업로드 -->
-      <div class="form-row">
-        <label class="form-label">사진 첨부</label>
-        <button type="button" class="btn-secondary">사진 업로드</button>
-        <!-- 실제 구현은 input type="file" 숨기고 JS로 연결 -->
-      </div>
+     <div class="form-row">
+      <label class="form-label">사진 첨부</label>
+
+     <!-- 숨겨진 파일 입력 -->
+     <input
+       id="report-image"
+       type="file"
+       accept="image/*"
+       style="display: none"
+     />
+
+     <!-- 사용자가 누르는 버튼 -->
+     <button type="button" class="btn-secondary" id="btn-upload-image">
+       사진 업로드
+     </button>
+
+     <!-- 선택한 파일명 표시용 (옵션) -->
+     <span id="report-image-name" class="image-name-text"></span>
+     </div>
 
       <!-- 신고 버튼 -->
       <div class="form-row form-actions">
-        <button type="button" class="btn-primary">이 위치 신고하기</button>
+        <button type="button" class="btn-primary" id="btn-submit-report">이 위치 신고하기</button>
       </div>
     </section>
 
-    <!-- 올바른 주차 가이드 (섹션만 모양 맞추기. 내용은 guide 담당자와 조정) -->
-    <section class="guide-section">
-      <h2 class="section-title">올바른 주차 가이드</h2>
-      <div class="guide-cards">
-        <article class="guide-card">
-          <img src="images/guide1.png" alt="1. 주차구역에 세우기" />
-          <p>1. 주차구역에 세우기</p>
-        </article>
-        <article class="guide-card">
-          <img src="images/guide2.png" alt="2. 보행로를 방해하지 않기" />
-          <p>2. 보행로를 방해하지 않기</p>
-        </article>
-        <article class="guide-card">
-          <img src="images/guide3.png" alt="3. 가로를 눕히지 않기" />
-          <p>3. 가로를 눕히지 않기</p>
-        </article>
-      </div>
-    </section>
   </div>
 
   <!-- JS -->
