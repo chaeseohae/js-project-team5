@@ -21,6 +21,7 @@ filterButtons.forEach(button => {
 
 // let reports = loadReports(); // 기존 let reports = [...] 를 이걸로 교체
 
+
 let reports = [
   {
     id: 1,
