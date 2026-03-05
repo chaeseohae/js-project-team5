@@ -73,6 +73,7 @@ function emptyMessage(status) {
   }
 }
 
+
 // 신고 취소 함수
 function cancelReport(id) {
   const confirmed = confirm('신고를 취소하시겠습니까?');
