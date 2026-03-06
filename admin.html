@@ -9,19 +9,28 @@
 </head>
 <body>
     <h1>관리자 페이지</h1>
+    <div class="admin-wrapper">
+        <!-- 필터 탭 -->
+        <div class="admin-filter" id="adminFilter">
+            <button class="admin-filter-btn active" data-filter="all">전체</button>
+            <button class="admin-filter-btn" data-filter="pending">신고 접수</button>
+            <button class="admin-filter-btn" data-filter="processing">처리 중</button>
+            <button class="admin-filter-btn" data-filter="done">처리 완료</button>
+        </div>
 
-    <!-- 필터 탭 -->
-    <div class="admin-filter" id="adminFilter">
-        <button class="admin-filter-btn active" data-filter="all">전체</button>
-        <button class="admin-filter-btn" data-filter="pending">신고 접수</button>
-        <button class="admin-filter-btn" data-filter="processing">처리 중</button>
-        <button class="admin-filter-btn" data-filter="completed">처리 완료</button>
+        <!-- 정렬 드롭박스 -->
+        <div class="sort-container">
+            <select class="admin-sort-select" id="adminSortSelect">
+                <option value="oldest">오래된순</option>
+                <option value="newest">최신순</option>
+            </select>
+        </div>
+
+        <!-- 카드 목록 -->
+        <div style="margin: 0 10px;">
+            <div id="adminBody"></div>
+        </div>
     </div>
-
-    <!-- 카드 목록 -->
-     <div style="margin: 0 10px;">
-         <div id="adminBody"></div>
-     </div>
 
     <script src="admin.js"></script>
 </body>

@@ -1,19 +1,4 @@
-const filterButtons = document.querySelectorAll('.filter-btn');
-
-filterButtons.forEach(button => {
-  button.addEventListener('click', () => {
-    const status = button.dataset.status;
-
-    filterButtons.forEach(btn => btn.classList.remove('active'));
-    button.classList.add('active');
-
-    currentFilter = status;
-    renderReports();
-  });
-});
-
-// ─── localStorage에서 불러오기 ───
-// 실제 데이터 연동. 없으면 빈 배열.
+// ─── localStorage ───
 function loadReports() {
   try {
     const stored = localStorage.getItem('reports');
@@ -29,42 +14,66 @@ function saveReports() {
   localStorage.setItem('reports', JSON.stringify(reports));
 }
 
+// ─── 상태 변수 ───
 let reports = loadReports();
-
-// 현재 필터 상태 추적
 let currentFilter = 'all';
+let currentPage = 1;
+let currentSort = 'newest';
+const PAGE_SIZE = 5;
 
+// ─── 필터 버튼 ───
+const filterButtons = document.querySelectorAll('.filter-btn');
+filterButtons.forEach(button => {
+  button.addEventListener('click', () => {
+    filterButtons.forEach(btn => btn.classList.remove('active'));
+    button.classList.add('active');
+    currentFilter = button.dataset.status;
+    currentPage = 1;
+    renderReports();
+  });
+});
+
+// ─── 정렬 드롭박스 ───
+const sortSelect = document.getElementById('sortSelect');
+if (sortSelect) {
+  sortSelect.addEventListener('change', () => {
+    currentSort = sortSelect.value;
+    currentPage = 1;
+    renderReports();
+  });
+}
+
+// ─── 유틸 함수 ───
 function statusText(status) {
   switch (status) {
     case 'pending':    return '신고 접수';
     case 'processing': return '처리 중';
-    case 'completed':  return '처리 완료';
+    case 'done':       return '처리 완료';
     default: return '';
   }
 }
 
-// 빈 상태 메시지 - 필터별 분기
 function emptyMessage(status) {
   switch (status) {
     case 'pending':    return '신고 접수된 내역이 없습니다.';
     case 'processing': return '처리 중인 신고가 없습니다.';
-    case 'completed':  return '처리 완료된 신고가 없습니다.';
+    case 'done':       return '처리 완료된 신고가 없습니다.';
     default:           return '신고 내역이 없습니다.';
   }
 }
 
-// 신고 취소 - localStorage에서도 삭제
+// ─── 신고 취소 ───
 function cancelReport(id) {
   const confirmed = confirm('신고를 취소하시겠습니까?');
   if (!confirmed) return;
-
   reports = reports.filter(report => report.id !== id);
   saveReports();
   renderReports();
 }
 
-// 신고 건수 뱃지
+// ─── 뱃지 ───
 function updateBadges() {
+  reports = loadReports();
   filterButtons.forEach(btn => {
     const status = btn.dataset.status;
     const count = status === 'all'
@@ -81,35 +90,40 @@ function updateBadges() {
   });
 }
 
+// ─── 렌더링 ───
 const container = document.querySelector('.my-reports-container');
 
-function renderReports() {
-  // 최신 데이터 다시 불러오기 (관리자가 상태 변경했을 수 있으므로)
+const renderReports = () => {
   reports = loadReports();
 
-  const filtered =
-    currentFilter === 'all'
-      ? reports
-      : reports.filter(report => report.status === currentFilter);
+  const base = currentFilter === 'all'
+    ? reports
+    : reports.filter(r => r.status === currentFilter);
+
+  const sorted = base.slice().sort((a, b) => {
+    return currentSort === 'newest' ? b.id - a.id : a.id - b.id;
+  });
 
   container.innerHTML = '';
 
-  if (filtered.length === 0) {
+  if (sorted.length === 0) {
     container.innerHTML = `<p class="text-muted empty-message">${emptyMessage(currentFilter)}</p>`;
     updateBadges();
     return;
   }
 
-  filtered.forEach(report => {
+  const totalPages = Math.ceil(sorted.length / PAGE_SIZE);
+  const start = (currentPage - 1) * PAGE_SIZE;
+  const paginated = sorted.slice(start, start + PAGE_SIZE);
+
+  paginated.forEach(report => {
     const card = document.createElement('div');
     card.className = `card status-${report.status}`;
 
-    // 신고 취소 버튼은 'pending' 상태일 때만 표시
     const cancelBtn = report.status === 'pending'
       ? `<button class="cancel-btn" onclick="cancelReport(${report.id})">신고 취소</button>`
       : '';
 
-    // 이미지 없으면 기본 이미지
     const imgSrc = report.image || "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRqEWgS0uxxEYJ0PsOb2OgwyWvC0Gjp8NUdPw&usqp=CAU";
 
     card.innerHTML = `
@@ -123,8 +137,9 @@ function renderReports() {
               <div class="report-status">${statusText(report.status)}</div>
               ${cancelBtn}
             </div>
-            <div class="fw-semibold report-title">${report.title || '내용 없음'}</div>
-            <div class="report-bottom">${report.address || '주소 없음'} · ${report.date || ''}</div>
+            <div class="fw-semibold report-title">${report.title || '제목 없음'}</div>
+            <div class="report-bottom">${report.address || '주소 없음'}</div>
+            <div class="report-bottom">${report.date || ''}</div>
           </div>
         </div>
       </div>
@@ -133,7 +148,28 @@ function renderReports() {
     container.appendChild(card);
   });
 
+  if (totalPages > 1) {
+    const pagination = document.createElement('div');
+    pagination.className = 'reports-pagination';
+
+    for (let i = 1; i <= totalPages; i++) {
+      const btn = document.createElement('button');
+      btn.className = `reports-page-btn ${i === currentPage ? 'active' : ''}`;
+      btn.textContent = i;
+      btn.addEventListener('click', () => {
+        currentPage = i;
+        renderReports();
+        const panel = document.querySelector('.side-panel');
+        if (panel) panel.scrollTo({ top: 0, behavior: 'smooth' });
+        else window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      pagination.appendChild(btn);
+    }
+
+    container.appendChild(pagination);
+  }
+
   updateBadges();
-}
+};
 
 renderReports();
