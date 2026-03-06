@@ -10,6 +10,60 @@ const mapOptions = {
 // 지도 생성
 const drawMap = new kakao.maps.Map(mapArea, mapOptions);
 
+// ------------------------------
+// 현재 위치(유저 위치) 동그란 점 표시 + sensor-tracking.js 연동
+// ------------------------------
+
+let currentLocationOverlay = null;
+let lastHeadingDeg = null; // 방향 값(동서남북) - 나중에 사용할 수 있도록 저장
+let lastLocationLatLng = null; // 최근 유저 위치 좌표 (현위치 버튼에서 사용)
+
+if (window.SensorTracking) {
+  // 위치가 바뀔 때마다 호출
+  window.SensorTracking.onLocationChange = function (position) {
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+    const latLng = new kakao.maps.LatLng(lat, lng);
+    lastLocationLatLng = latLng;
+
+    // 처음 한 번만 오버레이 생성, 이후에는 위치만 갱신
+    if (!currentLocationOverlay) {
+      const content = '<div class="current-location-dot"></div>';
+
+      currentLocationOverlay = new kakao.maps.CustomOverlay({
+        position: latLng,
+        content: content,
+        yAnchor: 0.5,
+        xAnchor: 0.5
+      });
+
+      currentLocationOverlay.setMap(drawMap);
+    } else {
+      currentLocationOverlay.setPosition(latLng);
+    }
+
+    // 필요하면 주석 해제 → 항상 내 위치가 화면 중앙 근처에 보이게
+    // drawMap.setCenter(latLng);
+  };
+
+  // 위치 에러
+  window.SensorTracking.onLocationError = function (error) {
+    console.warn('현재 위치 추적 에러:', error);
+  };
+
+  // 방향(heading) 값도 받아서 저장해두기 (동서남북 회전용)
+  window.SensorTracking.onHeadingChange = function (headingDeg) {
+    lastHeadingDeg = headingDeg;
+    // 나중에 방향 화살표를 그릴 때 이 값을 사용하면 됨
+  };
+
+  // 실제 추적 시작
+  window.SensorTracking.startLocationTracking();
+  window.SensorTracking.startHeadingTracking();
+} else {
+  console.warn('SensorTracking 모듈이 로드되지 않았습니다.');
+}
+
 // 홈 (map=홈 / 새로고침 & map.html로 이동)
 document.getElementById("homeBtn").addEventListener("click", function() {
     location.href = "./map.html"; 
@@ -86,21 +140,17 @@ kakao.maps.event.addListener(drawMap, 'click', function(mouseEvent) {
 
           let address = result[0].address.address_name;
 
-          const newReport = saveReport(lat, lng, address);
+          // 위치만 저장
+          const selectedLocation = {
+              lat: lat,
+              lng: lng,
+              address: address
+          };
 
-          // 마커 생성
-          let marker = new kakao.maps.Marker({
-              position: latLng
-          });
+          localStorage.setItem("selectedLocation", JSON.stringify(selectedLocation));
 
-          marker.setMap(drawMap);
-
-          marker.reportId = newReport.id;
-
-          // 마커 클릭 → 처리완료
-          kakao.maps.event.addListener(marker, 'click', function(){
-              completeReport(marker.reportId);
-          });
+          // 신고하기 창 열기
+          openSlide("../index.html");
 
       }
 
@@ -117,6 +167,18 @@ document.getElementById("zoomIn").addEventListener("click", function() {
 document.getElementById("zoomOut").addEventListener("click", function() {
     drawMap.setLevel(drawMap.getLevel() + 1);
 });
+
+// 현위치 버튼: 최근 위치 좌표로 지도 이동
+const myLocationBtn = document.getElementById("myLocationBtn");
+if (myLocationBtn) {
+  myLocationBtn.addEventListener("click", function () {
+    if (lastLocationLatLng) {
+      drawMap.setCenter(lastLocationLatLng);
+    } else {
+      alert("아직 현재 위치를 가져오는 중입니다.\n잠시 후 다시 눌러주세요.");
+    }
+  });
+}
 
 // 햄버거 메뉴
 const menuToggle = document.getElementById("menuToggle");
@@ -180,7 +242,26 @@ function completeReport(id){
     });
 
     localStorage.setItem("reports", JSON.stringify(updatedReports));
-    console.log("aaa", completeReport)
+
+}
+
+
+// processing 상태 변경
+function processingReport(id){
+
+    let reports = JSON.parse(localStorage.getItem("reports")) || [];
+
+    const updatedReports = reports.map(report => {
+
+        if(report.id === id){
+            report.status = "processing";
+        }
+
+        return report;
+
+    });
+
+    localStorage.setItem("reports", JSON.stringify(updatedReports));
 
 }
 
@@ -191,7 +272,7 @@ function renderReports(){
 
     reports.forEach(report => {
 
-        if(report.status === "pending"){
+        if(report.status !== "done"){
 
             let marker = new kakao.maps.Marker({
                 position: new kakao.maps.LatLng(report.lat, report.lng)

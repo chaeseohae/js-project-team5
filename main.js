@@ -193,21 +193,59 @@ function handleSubmitReport() {
   console.log("신고가 저장되었습니다.", newReport);
 }
 
+// 신고 창 닫기 버튼
+function handleCloseReportWindow() {
+  // 1) 데스크톱: iframe 안에서 열렸고, 부모창에 closeSlide()가 있을 때
+  try {
+    if (
+      window.parent &&
+      window.parent !== window &&
+      typeof window.parent.closeSlide === "function"
+    ) {
+      window.parent.closeSlide();
+      return;
+    }
+  } catch (e) {
+    // cross-origin 이슈는 없겠지만, 안전하게 무시
+  }
+
+  // 2) 모바일처럼 단독으로 index.html 을 연 경우 → 지도 화면으로 이동
+  window.location.href = "map/map.html";
+}
+
 document.addEventListener("DOMContentLoaded", function () {
   const gpsButton = document.getElementById("btn-current-location");
   const resetButton = document.getElementById("btn-location-reset");
   const submitButton = document.getElementById("btn-submit-report");
+  const closeButton = document.getElementById("btn-close-report");
 
-  if (gpsButton) {
-    gpsButton.addEventListener("click", handleCurrentLocationClick);
-  }
+  // 기존 버튼 이벤트들 ...
+  if (gpsButton) gpsButton.addEventListener("click", handleCurrentLocationClick);
+  if (resetButton) resetButton.addEventListener("click", handleLocationReset);
+  if (submitButton) submitButton.addEventListener("click", handleSubmitReport);
+  if (closeButton) closeButton.addEventListener("click", handleCloseReportWindow);
 
-  if (resetButton) {
-    resetButton.addEventListener("click", handleLocationReset);
-  }
+  // ★ 사진 업로드 버튼 기능
+  const uploadButton = document.getElementById("btn-upload-image");
+  const imageInput = document.getElementById("report-image");
+  const imageNameSpan = document.getElementById("report-image-name");
 
-  if (submitButton) {
-    submitButton.addEventListener("click", handleSubmitReport);
+  if (uploadButton && imageInput) {
+    // 버튼 누르면 숨겨진 파일 input 열기
+    uploadButton.addEventListener("click", function () {
+      imageInput.click();
+    });
+
+    // 파일을 선택했을 때 파일 이름 표시
+    imageInput.addEventListener("change", function () {
+      const file = imageInput.files && imageInput.files[0];
+      if (!file) {
+        if (imageNameSpan) imageNameSpan.textContent = "";
+        return;
+      }
+      if (imageNameSpan) {
+        imageNameSpan.textContent = file.name;
+      }
+    });
   }
 });
-

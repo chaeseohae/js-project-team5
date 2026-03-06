@@ -21,6 +21,7 @@ body {
 
 /* 헤더 */
 .report-header {
+  position: relative;
   text-align: center;
   margin-bottom: 16px;
 }
@@ -29,6 +30,27 @@ body {
   margin: 0;
   font-size: 20px;
   color: black;
+}
+
+/* 창 전체 우측 상단 닫기 버튼 */
+.panel-close-btn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  background: #ffffff;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+  border-radius: 999px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.panel-close-btn:hover {
+  color: #111827;
+  background: #f3f4f6;
 }
 
 .report-subtitle {

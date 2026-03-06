@@ -173,3 +173,11 @@ const renderReports = () => {
 };
 
 renderReports();
+
+// DOM 로드 후 닫기 버튼 이벤트 연결
+document.addEventListener('DOMContentLoaded', function () {
+  const closeBtn = document.getElementById('btn-close-my-reports');
+  if (closeBtn) {
+    closeBtn.addEventListener('click', handleCloseMyReports);
+  }
+});

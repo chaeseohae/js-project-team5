@@ -4,6 +4,8 @@
   <meta charset="UTF-8" />
   <title>킥보드 신고 - 강필성</title>
   <link rel="stylesheet" href="style.css" />
+  <!-- Kakao Maps JS SDK (역지오코딩용) -->
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=1f489101c4804d0ce2dcf5da6a8cec2e&libraries=services"></script>
 </head>
 <body>
   <!-- 전체 페이지 컨테이너 -->
@@ -11,8 +13,20 @@
 
     <!-- (실제 합칠 때는 지도 영역은 다른 파일에서 올 것) -->
     <header class="report-header">
-      <h1>킥보드 신고</h1>
-      <p class="report-subtitle">지도에서 위치를 선택하고, 신고 유형을 입력하세요.</p>
+      <div class="panel-header-row">
+        <h1>킥보드 신고</h1>
+        <button
+          type="button"
+          class="panel-close-btn"
+          id="btn-close-report"
+          aria-label="신고 창 닫기"
+        >
+          ×
+        </button>
+      </div>
+      <p class="report-subtitle">
+        지도에서 위치를 선택하고, 신고 유형을 입력하세요.
+      </p>
     </header>
 
     <!-- 신고 폼 영역 (필성님 메인 파트) -->
