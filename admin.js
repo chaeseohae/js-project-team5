@@ -1,4 +1,5 @@
-const ADMIN_PAGE_SIZE = 10;
+const ADMIN_PAGE_SIZE = 5;
+let adminCurrentSort = 'oldest';
 let adminCurrentFilter = 'all';
 let adminCurrentPage = 1;
 
@@ -22,7 +23,7 @@ function adminStatusText(status) {
   switch (status) {
     case 'pending':    return '신고 접수';
     case 'processing': return '처리 중';
-    case 'completed':  return '처리 완료';
+    case 'done':       return '처리 완료';
     default: return '';
   }
 }
@@ -31,6 +32,17 @@ function adminStatusText(status) {
 if (document.getElementById('hiddenAdminBtn')) {
   document.getElementById('hiddenAdminBtn').addEventListener('click', () => {
     openSlide("../admin.html");
+  });
+}
+
+// ─── 정렬 드롭박스 ───
+function initAdminSort() {
+  const sortSelect = document.getElementById('adminSortSelect');
+  if (!sortSelect) return;
+  sortSelect.addEventListener('change', () => {
+    adminCurrentSort = sortSelect.value;
+    adminCurrentPage = 1;
+    renderAdminCards();
   });
 }
 
@@ -58,10 +70,8 @@ function updateAdminFilterUI() {
   filterArea.querySelectorAll('.admin-filter-btn').forEach(btn => {
     const filter = btn.dataset.filter;
 
-    // active 처리
     btn.classList.toggle('active', filter === adminCurrentFilter);
 
-    // 뱃지 업데이트
     const existing = btn.querySelector('.count-badge');
     if (existing) existing.remove();
 
@@ -76,16 +86,20 @@ function updateAdminFilterUI() {
   });
 }
 
-// ─── 카드 렌더링만 ───
+// ─── 카드 렌더링 ───
 function renderAdminCards() {
   const body = document.getElementById('adminBody');
   if (!body) return;
   body.innerHTML = '';
 
   const allReports = loadAdminReports();
-  const filtered = adminCurrentFilter === 'all'
+  const base = adminCurrentFilter === 'all'
     ? allReports
     : allReports.filter(r => r.status === adminCurrentFilter);
+
+  const filtered = base.slice().sort((a, b) =>
+    adminCurrentSort === 'oldest' ? a.id - b.id : b.id - a.id
+  );
 
   if (filtered.length === 0) {
     body.innerHTML = `<p class="admin-empty">신고 내역이 없습니다.</p>`;
@@ -116,7 +130,7 @@ function renderAdminCards() {
         <select class="status-select" id="admin-select-${report.id}">
           <option value="" disabled selected>처리상태를 선택하세요</option>
           <option value="processing">처리 중</option>
-          <option value="completed">처리 완료</option>
+          <option value="done">처리 완료</option>
         </select>
         <button class="confirm-btn" onclick="updateAdminStatus(${report.id})">확인</button>
       </div>
@@ -136,7 +150,7 @@ function renderAdminCards() {
       btn.addEventListener('click', () => {
         adminCurrentPage = i;
         renderAdminCards();
-        window.scrollTo(0, 0);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
       pagination.appendChild(btn);
     }
@@ -165,6 +179,7 @@ function updateAdminStatus(id) {
 }
 
 // ─── 페이지 로드 시 ───
+initAdminSort();
 initAdminFilter();
 updateAdminFilterUI();
 renderAdminCards();
