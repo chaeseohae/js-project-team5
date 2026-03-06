@@ -86,21 +86,17 @@ kakao.maps.event.addListener(drawMap, 'click', function(mouseEvent) {
 
           let address = result[0].address.address_name;
 
-          const newReport = saveReport(lat, lng, address);
+          // 위치만 저장
+          const selectedLocation = {
+              lat: lat,
+              lng: lng,
+              address: address
+          };
 
-          // 마커 생성
-          let marker = new kakao.maps.Marker({
-              position: latLng
-          });
+          localStorage.setItem("selectedLocation", JSON.stringify(selectedLocation));
 
-          marker.setMap(drawMap);
-
-          marker.reportId = newReport.id;
-
-          // 마커 클릭 → 처리완료
-          kakao.maps.event.addListener(marker, 'click', function(){
-              completeReport(marker.reportId);
-          });
+          // 신고하기 창 열기
+          openSlide("../index.html");
 
       }
 
@@ -180,7 +176,26 @@ function completeReport(id){
     });
 
     localStorage.setItem("reports", JSON.stringify(updatedReports));
-    console.log("aaa", completeReport)
+
+}
+
+
+// processing 상태 변경
+function processingReport(id){
+
+    let reports = JSON.parse(localStorage.getItem("reports")) || [];
+
+    const updatedReports = reports.map(report => {
+
+        if(report.id === id){
+            report.status = "processing";
+        }
+
+        return report;
+
+    });
+
+    localStorage.setItem("reports", JSON.stringify(updatedReports));
 
 }
 
@@ -191,7 +206,7 @@ function renderReports(){
 
     reports.forEach(report => {
 
-        if(report.status === "pending"){
+        if(report.status !== "done"){
 
             let marker = new kakao.maps.Marker({
                 position: new kakao.maps.LatLng(report.lat, report.lng)
