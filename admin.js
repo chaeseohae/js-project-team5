@@ -163,6 +163,7 @@ function renderAdminCards() {
 function updateAdminStatus(id) {
   const select = document.getElementById(`admin-select-${id}`);
   const newStatus = select.value;
+
   if (!newStatus) {
     alert('처리상태를 선택해주세요.');
     return;
@@ -170,11 +171,18 @@ function updateAdminStatus(id) {
 
   const list = loadAdminReports();
   const report = list.find(r => r.id === id);
+
   if (report) {
     report.status = newStatus;
+
     saveAdminReports(list);
+
     renderAdminCards();
     updateAdminFilterUI();
+
+    if (window.parent && window.parent !== window) {
+      window.parent.location.reload();
+    }
   }
 }
 

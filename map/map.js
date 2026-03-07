@@ -1,10 +1,22 @@
+const redMarkerImage = new kakao.maps.MarkerImage(
+  "./images/marker-red.svg",
+  new kakao.maps.Size(40, 40),
+);
+
+const orangeMarkerImage = new kakao.maps.MarkerImage(
+  "./images/marker-orange.svg",
+  new kakao.maps.Size(40, 40),
+);
+
+let markers = [];
+
 // 지도 영역 가져오기
-const mapArea = document.getElementById('map');
+const mapArea = document.getElementById("map");
 
 // 지도 옵션
 const mapOptions = {
-  center: new kakao.maps.LatLng(37.5665, 126.9780), // 서울시청좌표
-  level: 3
+  center: new kakao.maps.LatLng(37.5665, 126.978), // 서울시청좌표
+  level: 3,
 };
 
 // 지도 생성
@@ -34,7 +46,7 @@ if (window.SensorTracking) {
         position: latLng,
         content: content,
         yAnchor: 0.5,
-        xAnchor: 0.5
+        xAnchor: 0.5,
       });
 
       currentLocationOverlay.setMap(drawMap);
@@ -48,7 +60,7 @@ if (window.SensorTracking) {
 
   // 위치 에러
   window.SensorTracking.onLocationError = function (error) {
-    console.warn('현재 위치 추적 에러:', error);
+    console.warn("현재 위치 추적 에러:", error);
   };
 
   // 방향(heading) 값도 받아서 저장해두기 (동서남북 회전용)
@@ -61,111 +73,109 @@ if (window.SensorTracking) {
   window.SensorTracking.startLocationTracking();
   window.SensorTracking.startHeadingTracking();
 } else {
-  console.warn('SensorTracking 모듈이 로드되지 않았습니다.');
+  console.warn("SensorTracking 모듈이 로드되지 않았습니다.");
 }
 
 // 홈 (map=홈 / 새로고침 & map.html로 이동)
-document.getElementById("homeBtn").addEventListener("click", function() {
-    location.href = "./map.html"; 
+document.getElementById("homeBtn").addEventListener("click", function () {
+  location.href = "./map.html";
 });
 
-
-
-// 슬라이드 
+// 슬라이드
 const sidebar = document.getElementById("sidebar");
 const slideBtn = document.getElementById("slideBtn");
 const slideFrame = document.getElementById("slideFrame");
 const topMenu = document.querySelector(".top-menu");
 
 // 상단 버튼 → 슬라이드 열고 iframe 연결
-document.getElementById("reportBtn").addEventListener("click", function() {
-    openSlide("../index.html");
+document.getElementById("reportBtn").addEventListener("click", function () {
+  openSlide("../index.html");
 });
 
-document.getElementById("myReportsBtn").addEventListener("click", function() {
-    openSlide("../my-reports.html");
+document.getElementById("myReportsBtn").addEventListener("click", function () {
+  openSlide("../my-reports.html");
 });
 
-document.getElementById("guideBtn").addEventListener("click", function() {
-    openSlide("../guide.html");
+document.getElementById("guideBtn").addEventListener("click", function () {
+  openSlide("../guide.html");
 });
 
 //슬라이드 열기
 function openSlide(url) {
+  // 모바일이면 페이지 이동
+  if (window.innerWidth <= 768) {
+    location.href = url;
+    return;
+  }
 
-    // 모바일이면 페이지 이동
-    if(window.innerWidth <= 768){
-        location.href = url;
-        return;
-    }
-
-    // PC면 슬라이드
-    sidebar.classList.add("open");
-    slideBtn.textContent = "<";
-    slideFrame.src = url;
+  // PC면 슬라이드
+  sidebar.classList.add("open");
+  slideBtn.textContent = "<";
+  slideFrame.src = url;
 }
 //슬라이드 닫기
 function closeSlide() {
-    sidebar.classList.remove("open");
-    slideBtn.textContent = ">";
-    slideFrame.src = "";
+  sidebar.classList.remove("open");
+  slideBtn.textContent = ">";
+  slideFrame.src = "";
 }
 
-
 // 슬라이드 버튼 클릭
-slideBtn.addEventListener("click", function() {
-
-    if (sidebar.classList.contains("open")) {
-        closeSlide();
-    } else {
-        openSlide("../index.html");
-    }
+slideBtn.addEventListener("click", function () {
+  if (sidebar.classList.contains("open")) {
+    closeSlide();
+  } else {
+    openSlide("../index.html");
+  }
 });
-
-
 
 //클릭 위치 마커 생성
 const geoCoder = new kakao.maps.services.Geocoder();
 
-kakao.maps.event.addListener(drawMap, 'click', function(mouseEvent) {
+kakao.maps.event.addListener(drawMap, "click", function (mouseEvent) {
 
-  let latLng = mouseEvent.latLng;
+  const latLng = mouseEvent.latLng;
+  const lat = latLng.getLat();
+  const lng = latLng.getLng();
 
-  let lat = latLng.getLat();
-  let lng = latLng.getLng();
+  geoCoder.coord2Address(lng, lat, function (result, status) {
 
-  geoCoder.coord2Address(lng, lat, function(result, status){
+    if (status === kakao.maps.services.Status.OK) {
 
-      if(status === kakao.maps.services.Status.OK){
+      const address = result[0].address.address_name;
 
-          let address = result[0].address.address_name;
+      const selectedLocation = {
+        lat: lat,
+        lng: lng,
+        address: address
+      };
 
-          // 위치만 저장
-          const selectedLocation = {
-              lat: lat,
-              lng: lng,
-              address: address
-          };
+      localStorage.setItem(
+        "selectedLocation",
+        JSON.stringify(selectedLocation)
+      );
 
-          localStorage.setItem("selectedLocation", JSON.stringify(selectedLocation));
+      openSlide("../index.html");
 
-          // 신고하기 창 열기
-          openSlide("../index.html");
-
-      }
+    }
 
   });
 
 });
 
+//신고데이터 불러오기
+function loadReports() {
+  return JSON.parse(localStorage.getItem("reports")) || [];
+}
+
 // 확대
-document.getElementById("zoomIn").addEventListener("click", function() {
-    drawMap.setLevel(drawMap.getLevel() - 1);
+document.getElementById("zoomIn").addEventListener("click", function () {
+  drawMap.setLevel(drawMap.getLevel() - 1);
 });
 
 // 축소
-document.getElementById("zoomOut").addEventListener("click", function() {
-    drawMap.setLevel(drawMap.getLevel() + 1);
+document.getElementById("zoomOut").addEventListener("click", function () {
+  drawMap.setLevel(drawMap.getLevel() + 1);
 });
 
 // 현위치 버튼: 최근 위치 좌표로 지도 이동
@@ -184,119 +194,121 @@ if (myLocationBtn) {
 const menuToggle = document.getElementById("menuToggle");
 const mobileMenu = document.getElementById("mobileMenu");
 
-menuToggle.addEventListener("click", function(){
-    mobileMenu.classList.toggle("open");
+menuToggle.addEventListener("click", function () {
+  mobileMenu.classList.toggle("open");
 });
 
 // 모바일 메뉴 페이지 이동
-document.getElementById("mReportBtn").addEventListener("click", function(){
-    location.href = "../index.html";
+document.getElementById("mReportBtn").addEventListener("click", function () {
+  location.href = "../index.html";
 });
 
-document.getElementById("mMyReportsBtn").addEventListener("click", function(){
-    location.href = "../my-reports.html";
+document.getElementById("mMyReportsBtn").addEventListener("click", function () {
+  location.href = "../my-reports.html";
 });
 
-document.getElementById("mGuideBtn").addEventListener("click", function(){
-    location.href = "../guide.html";
+document.getElementById("mGuideBtn").addEventListener("click", function () {
+  location.href = "../guide.html";
 });
-
 
 // 로컬스토리지
 let reports = JSON.parse(localStorage.getItem("reports")) || [];
 
-function saveReport(lat, lng, address){
+function saveReport(lat, lng, address) {
+  let reports = JSON.parse(localStorage.getItem("reports")) || [];
 
-    let reports = JSON.parse(localStorage.getItem("reports")) || [];
+  const newReport = {
+    id: Date.now(),
+    lat: lat,
+    lng: lng,
+    address: address,
+    status: "pending",
+  };
 
-    const newReport = {
-        id: Date.now(),
-        lat: lat,
-        lng: lng,
-        address: address,
-        status: "pending"
-    };
+  console.log("dddd", newReport);
 
-    console.log("dddd",newReport)
-    
-    reports.push(newReport);
+  reports.push(newReport);
 
-    localStorage.setItem("reports", JSON.stringify(reports));
+  localStorage.setItem("reports", JSON.stringify(reports));
 
-    return newReport;
+  return newReport;
 }
 
 //id 받아와서 done으로 상태변경
-function completeReport(id){
+function completeReport(id) {
+  let reports = JSON.parse(localStorage.getItem("reports")) || [];
 
-    let reports = JSON.parse(localStorage.getItem("reports")) || [];
+  const updatedReports = reports.map((report) => {
+    if (report.id === id) {
+      report.status = "done";
+    }
 
-    const updatedReports = reports.map(report => {
+    return report;
+  });
 
-        if(report.id === id){
-            report.status = "done";
-        }
-
-        return report;
-
-    });
-
-    localStorage.setItem("reports", JSON.stringify(updatedReports));
-
+  localStorage.setItem("reports", JSON.stringify(updatedReports));
 }
 
-
 // processing 상태 변경
-function processingReport(id){
+function processingReport(id) {
+  let reports = JSON.parse(localStorage.getItem("reports")) || [];
 
-    let reports = JSON.parse(localStorage.getItem("reports")) || [];
+  const updatedReports = reports.map((report) => {
+    if (report.id === id) {
+      report.status = "processing";
+    }
 
-    const updatedReports = reports.map(report => {
+    return report;
+  });
 
-        if(report.id === id){
-            report.status = "processing";
-        }
-
-        return report;
-
-    });
-
-    localStorage.setItem("reports", JSON.stringify(updatedReports));
-
+  localStorage.setItem("reports", JSON.stringify(updatedReports));
 }
 
 //위 내용 가지고 렌더 (*>status = "done" 관리자 페이지에서 바꾸면 마커 사라짐)
-function renderReports(){
+function renderReports() {
 
-    const reports = JSON.parse(localStorage.getItem("reports")) || [];
+  markers.forEach(marker => marker.setMap(null));
+  markers = [];
 
-    reports.forEach(report => {
+  const reports = JSON.parse(localStorage.getItem("reports")) || [];
 
-        if(report.status !== "done"){
+  reports.forEach(report => {
+    
+    if (report.status !== "done") {
 
-            let marker = new kakao.maps.Marker({
-                position: new kakao.maps.LatLng(report.lat, report.lng)
-            });
+      let markerImage;
 
-            marker.setMap(drawMap);
+      if (report.status === "pending") {
+        markerImage = redMarkerImage;
+      } else if (report.status === "processing") {
+        markerImage = orangeMarkerImage;
+      }
 
-        }
+      const marker = new kakao.maps.Marker({
+        position: new kakao.maps.LatLng(report.lat, report.lng),
+        image: markerImage
+      });
 
-    });
+      marker.setMap(drawMap);
+      markers.push(marker);
+
+    }
+
+  });
 
 }
 
 renderReports();
 
+function updateReportStatus(id, status) {
+  let reports = loadReports();
 
+  reports = reports.map((report) => {
+    if (report.id === id) {
+      report.status = status;
+    }
+    return report;
+  });
 
-// [테스터용] 지도 저장된 마커 전체삭제
-document.getElementById("resetBtn").addEventListener("click", function(){
-
-    localStorage.removeItem("reports");
-
-    alert("테스트 데이터 삭제됨");
-
-    location.reload();
-
-});
+  localStorage.setItem("reports", JSON.stringify(reports));
+}
