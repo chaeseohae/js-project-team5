@@ -71,6 +71,23 @@ function cancelReport(id) {
   renderReports();
 }
 
+// ─── 창 닫기 (데스크톱: 슬라이드 닫기, 모바일: 지도로 이동) ───
+function handleCloseMyReports() {
+  try {
+    if (
+      window.parent &&
+      window.parent !== window &&
+      typeof window.parent.closeSlide === 'function'
+    ) {
+      window.parent.closeSlide();
+      return;
+    }
+  } catch (e) {
+    // 무시
+  }
+  window.location.href = 'map/map.html';
+}
+
 // ─── 뱃지 ───
 function updateBadges() {
   reports = loadReports();
@@ -138,6 +155,7 @@ const renderReports = () => {
               ${cancelBtn}
             </div>
             <div class="fw-semibold report-title">${report.title || '제목 없음'}</div>
+            ${report.description ? `<div class="report-desc text-muted small">${report.description}</div>` : ''}
             <div class="report-bottom">${report.address || '주소 없음'}</div>
             <div class="report-bottom">${report.date || ''}</div>
           </div>

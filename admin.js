@@ -178,8 +178,30 @@ function updateAdminStatus(id) {
   }
 }
 
+// ─── 창 닫기 (데스크톱: 슬라이드 닫기, 모바일: 지도로 이동) ───
+function handleCloseAdmin() {
+  try {
+    if (
+      window.parent &&
+      window.parent !== window &&
+      typeof window.parent.closeSlide === 'function'
+    ) {
+      window.parent.closeSlide();
+      return;
+    }
+  } catch (e) {
+    // 무시
+  }
+  window.location.href = 'map/map.html';
+}
+
 // ─── 페이지 로드 시 ───
 initAdminSort();
 initAdminFilter();
 updateAdminFilterUI();
 renderAdminCards();
+
+const adminCloseBtn = document.getElementById('btn-close-admin');
+if (adminCloseBtn) {
+  adminCloseBtn.addEventListener('click', handleCloseAdmin);
+}

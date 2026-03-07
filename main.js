@@ -111,6 +111,7 @@ function handleLocationReset() {
 }
 
 // 현재 폼 상태로부터 신고 객체 하나 만들기 (id는 나중에 부여)
+// image는 handleSubmitReport에서 base64로 채움
 function buildReportFromForm() {
   const locationInput = document.getElementById("report-location-input");
   const etcInput = document.getElementById("report-etc");
@@ -123,10 +124,24 @@ function buildReportFromForm() {
     now.getMonth() + 1
   ).padStart(2, "0")}.${String(now.getDate()).padStart(2, "0")}`;
 
+  const labelText = selectedType
+    ? (selectedType.closest("label")
+        ? selectedType.closest("label").textContent.trim()
+        : (selectedType.nextSibling && selectedType.nextSibling.textContent
+            ? selectedType.nextSibling.textContent.trim()
+            : ""))
+    : "";
+
   return {
     status: "pending",
-    title: selectedType ? selectedType.nextSibling.textContent.trim() : "",
-    description: etcInput ? etcInput.value : "",
+    title:
+      selectedType &&
+      selectedType.value === "etc" &&
+      etcInput &&
+      etcInput.value.trim()
+        ? etcInput.value.trim()
+        : labelText,
+    description: etcInput ? etcInput.value.trim() : "",
     date: dateString,
     address: locationInput ? locationInput.value : "",
     image: null,
@@ -150,8 +165,18 @@ function saveReportsToStorage(list) {
   localStorage.setItem("reports", JSON.stringify(list));
 }
 
+// 파일을 base64 Data URL로 읽기 (로컬 저장용)
+function readFileAsDataURL(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
 // "이 위치 신고하기" 버튼 클릭 시 신고 데이터를 저장
-function handleSubmitReport() {
+async function handleSubmitReport() {
   const locationInput = document.getElementById("report-location-input");
   if (!locationInput || !locationInput.value) {
     alert("먼저 위치를 선택하거나 현재 위치 버튼을 눌러 주세요.");
@@ -159,8 +184,18 @@ function handleSubmitReport() {
   }
 
   const newReport = buildReportFromForm();
-  const reports = loadReportsFromStorage();
+  const imageInput = document.getElementById("report-image");
+  const imageNameSpan = document.getElementById("report-image-name");
 
+  if (imageInput && imageInput.files && imageInput.files[0]) {
+    try {
+      newReport.image = await readFileAsDataURL(imageInput.files[0]);
+    } catch (e) {
+      console.warn("이미지 읽기 실패:", e);
+    }
+  }
+
+  const reports = loadReportsFromStorage();
   const nextId =
     reports.length > 0
       ? Math.max(...reports.map((r) => (typeof r.id === "number" ? r.id : 0))) +
@@ -181,6 +216,12 @@ function handleSubmitReport() {
   typeRadios.forEach((radio) => {
     radio.checked = radio.value === "block_crosswalk";
   });
+  if (imageInput) {
+    imageInput.value = "";
+  }
+  if (imageNameSpan) {
+    imageNameSpan.textContent = "";
+  }
 
   const success = document.getElementById("report-success");
   if (success) {
@@ -214,18 +255,34 @@ function handleCloseReportWindow() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
+  // 지도에서 위치 클릭 후 열렸을 때: selectedLocation으로 위치 인풋 채우기
+  try {
+    const stored = localStorage.getItem("selectedLocation");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      if (parsed && parsed.address) {
+        const locationInput = document.getElementById("report-location-input");
+        if (locationInput) {
+          locationInput.value = parsed.address;
+        }
+        localStorage.removeItem("selectedLocation");
+      }
+    }
+  } catch (e) {
+    // 무시
+  }
+
   const gpsButton = document.getElementById("btn-current-location");
   const resetButton = document.getElementById("btn-location-reset");
   const submitButton = document.getElementById("btn-submit-report");
   const closeButton = document.getElementById("btn-close-report");
 
-  // 기존 버튼 이벤트들 ...
   if (gpsButton) gpsButton.addEventListener("click", handleCurrentLocationClick);
   if (resetButton) resetButton.addEventListener("click", handleLocationReset);
   if (submitButton) submitButton.addEventListener("click", handleSubmitReport);
   if (closeButton) closeButton.addEventListener("click", handleCloseReportWindow);
 
-  // ★ 사진 업로드 버튼 기능
+  // 사진 업로드 버튼 기능
   const uploadButton = document.getElementById("btn-upload-image");
   const imageInput = document.getElementById("report-image");
   const imageNameSpan = document.getElementById("report-image-name");
