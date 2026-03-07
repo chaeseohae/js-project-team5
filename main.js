@@ -184,8 +184,14 @@ async function handleSubmitReport() {
   }
 
   const newReport = buildReportFromForm();
+  const selectedLocation = JSON.parse(localStorage.getItem("selectedLocation"));
   const imageInput = document.getElementById("report-image");
   const imageNameSpan = document.getElementById("report-image-name");
+
+  if(selectedLocation){
+    newReport.lat = selectedLocation.lat;
+    newReport.lng = selectedLocation.lng;
+  }
 
   if (imageInput && imageInput.files && imageInput.files[0]) {
     try {
@@ -205,6 +211,16 @@ async function handleSubmitReport() {
   newReport.id = nextId;
   reports.push(newReport);
   saveReportsToStorage(reports);
+
+  // 위치 정보 초기화
+localStorage.removeItem("selectedLocation");
+
+// 지도 새로고침
+if (window.parent && window.parent !== window) {
+  window.parent.location.reload();
+} else {
+  window.location.href = "map/map.html";
+}
 
   // 폼 초기화
   locationInput.value = "";
@@ -265,7 +281,6 @@ document.addEventListener("DOMContentLoaded", function () {
         if (locationInput) {
           locationInput.value = parsed.address;
         }
-        localStorage.removeItem("selectedLocation");
       }
     }
   } catch (e) {

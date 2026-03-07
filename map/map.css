@@ -204,19 +204,3 @@ body {
 }
 
 }
-
-/* 테스터용 */
-#resetBtn {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
-    z-index: 999;
-
-    padding: 10px 16px;
-    border: none;
-    border-radius: 10px;
-    background: red;
-    color: white;
-    font-weight: bold;
-    cursor: pointer;
-}
