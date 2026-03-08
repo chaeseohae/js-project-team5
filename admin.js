@@ -51,12 +51,29 @@ function initAdminFilter() {
   const filterArea = document.getElementById('adminFilter');
   if (!filterArea) return;
 
+  const deleteDoneBtn = document.getElementById('deleteDoneBtn');
+  const sortContainer = document.querySelector('.sort-container');
+
+  // 초기 상태 적용
+  if (deleteDoneBtn && sortContainer) {
+    deleteDoneBtn.style.display = 'none';
+    sortContainer.style.justifyContent = 'flex-end';
+  }
+
   filterArea.querySelectorAll('.admin-filter-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       adminCurrentFilter = btn.dataset.filter;
       adminCurrentPage = 1;
       renderAdminCards();
       updateAdminFilterUI();
+
+      if (deleteDoneBtn) {
+        const isDone = adminCurrentFilter === 'done';
+        deleteDoneBtn.style.display = isDone ? 'block' : 'none';
+        if (sortContainer) {
+          sortContainer.style.justifyContent = isDone ? 'space-between' : 'flex-end';
+        }
+      }
     });
   });
 }
@@ -127,14 +144,31 @@ function renderAdminCards() {
         </div>
       </div>
       <div class="admin-card-actions">
-        <select class="status-select" id="admin-select-${report.id}">
-          <option value="" disabled selected>처리상태를 선택하세요</option>
-          <option value="processing">처리 중</option>
-          <option value="done">처리 완료</option>
-        </select>
-        <button class="confirm-btn" onclick="updateAdminStatus(${report.id})">확인</button>
-      </div>
+  <select class="status-select" id="admin-select-${report.id}">
+    <option value="" disabled selected>처리상태를 선택하세요</option>
+    <option value="processing">처리 중</option>
+    <option value="done">처리 완료</option>
+  </select>
+  <button class="confirm-btn" onclick="updateAdminStatus(${report.id})">확인</button>
+  ${report.status === 'done'
+    ? `<button class="delete-btn" onclick="deleteAdminReport(${report.id})">삭제</button>`
+    : ''
+  }
+</div>
     `;
+
+    if (report.status !== 'done') {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', function(e) {
+        if (e.target.classList.contains('confirm-btn') || e.target.classList.contains('status-select')) return;
+        try {
+          if (window.parent && window.parent !== window && typeof window.parent.moveToMarker === 'function') {
+            window.parent.moveToMarker(report.lat, report.lng);
+          }
+        } catch(e) {}
+      });
+    }
+
     body.appendChild(card);
   });
 
@@ -184,6 +218,24 @@ function updateAdminStatus(id) {
       window.parent.location.reload();
     }
   }
+}
+
+function deleteAdminReport(id) {
+  const confirmed = confirm('신고를 삭제하시겠습니까?');
+  if (!confirmed) return;
+  const list = loadAdminReports().filter(r => r.id !== id);
+  saveAdminReports(list);
+  renderAdminCards();
+  updateAdminFilterUI();
+}
+
+function deleteAllDone() {
+  const confirmed = confirm('처리 완료된 신고를 모두 삭제하시겠습니까?');
+  if (!confirmed) return;
+  const list = loadAdminReports().filter(r => r.status !== 'done');
+  saveAdminReports(list);
+  renderAdminCards();
+  updateAdminFilterUI();
 }
 
 // ─── 창 닫기 (데스크톱: 슬라이드 닫기, 모바일: 지도로 이동) ───

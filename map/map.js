@@ -292,6 +292,12 @@ function renderReports() {
       marker.setMap(drawMap);
       markers.push(marker);
 
+
+      marker.reportId = report.id;
+      kakao.maps.event.addListener(marker, 'click', function() {
+        openSlide(`../my-reports.html?id=${report.id}`);
+      });
+
     }
 
   });
@@ -311,4 +317,16 @@ function updateReportStatus(id, status) {
   });
 
   localStorage.setItem("reports", JSON.stringify(reports));
+
+}
+
+// iframe에서 호출할 수 있도록 전역으로 노출
+window.onReportSubmitted = function() {
+  renderReports();
+}
+
+window.moveToMarker = function(lat, lng) {
+  const latLng = new kakao.maps.LatLng(lat, lng);
+  drawMap.setCenter(latLng);
+  drawMap.setLevel(3);
 }

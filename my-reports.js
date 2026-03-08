@@ -68,6 +68,14 @@ function cancelReport(id) {
   if (!confirmed) return;
   reports = reports.filter(report => report.id !== id);
   saveReports();
+
+  // 지도 마커 다시 렌더링
+  try {
+    if (window.parent && window.parent !== window && typeof window.parent.renderReports === 'function') {
+      window.parent.renderReports();
+    }
+  } catch (e) {}
+
   renderReports();
 }
 
@@ -163,6 +171,18 @@ const renderReports = () => {
       </div>
     `;
 
+    if (report.status !== 'done') {
+      card.style.cursor = 'pointer';
+      card.addEventListener('click', function(e) {
+        if (e.target.classList.contains('cancel-btn')) return;
+        try {
+          if (window.parent && window.parent !== window && typeof window.parent.moveToMarker === 'function') {
+            window.parent.moveToMarker(report.lat, report.lng);
+          }
+        } catch(e) {}
+      });
+    }
+
     container.appendChild(card);
   });
 
@@ -187,6 +207,28 @@ const renderReports = () => {
     container.appendChild(pagination);
   }
 
+  // 마커 클릭으로 열렸을 때 해당 카드 하이라이트
+  const params = new URLSearchParams(window.location.search);
+  const targetId = parseInt(params.get('id'));
+  if (targetId) {
+    const allSorted = sorted;
+    const idx = allSorted.findIndex(r => r.id === targetId);
+    if (idx !== -1) {
+      const page = Math.ceil((idx + 1) / PAGE_SIZE);
+      if (page !== currentPage) {
+        currentPage = page;
+        renderReports();
+        return;
+      }
+      const cards = container.querySelectorAll('.card');
+      const cardIdx = idx - (currentPage - 1) * PAGE_SIZE;
+      if (cards[cardIdx]) {
+        cards[cardIdx].scrollIntoView({ behavior: 'smooth' });
+        cards[cardIdx].style.outline = '2px solid #a04dff';
+        setTimeout(() => cards[cardIdx].style.outline = '', 2000);
+      }
+    }
+  }
   updateBadges();
 };
 

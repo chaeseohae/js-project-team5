@@ -165,7 +165,9 @@ h1 {
 /* ─── 정렬 드롭박스 ─── */
 .sort-container {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
 }
 
 .admin-sort-select {
@@ -176,9 +178,8 @@ h1 {
     color: #333;
     background: #fff;
     cursor: pointer;
-    margin-bottom: 14px;
     box-shadow: 0 1px 3px rgba(160, 77, 255, 0.25);
-    margin-right: 4px;
+    margin-right: 5px;
 }
 
 .admin-sort-select:focus {
@@ -344,6 +345,48 @@ h1 {
 
 .confirm-btn:hover {
     background: #8a3de0;
+}
+
+.delete-btn {
+    align-self: flex-end;
+    margin-top: auto;
+    background-color: transparent;
+    color: #aaaaaa;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    padding: 5px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.delete-btn:hover {
+    background-color: #fff0f0;
+    color: #e53935;
+    border-color: #e53935;
+}
+
+.delete-done-btn {
+    background-color: transparent;
+    color: #aaaaaa;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    padding: 5px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.delete-done-btn:hover {
+    background-color: #fff0f0;
+    color: #e53935;
+    border-color: #e53935;
 }
 
 /* ─── 빈 상태 ─── */
