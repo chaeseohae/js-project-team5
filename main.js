@@ -134,13 +134,7 @@ function buildReportFromForm() {
 
   return {
     status: "pending",
-    title:
-      selectedType &&
-      selectedType.value === "etc" &&
-      etcInput &&
-      etcInput.value.trim()
-        ? etcInput.value.trim()
-        : labelText,
+    title: labelText,
     description: etcInput ? etcInput.value.trim() : "",
     date: dateString,
     address: locationInput ? locationInput.value : "",
@@ -188,6 +182,20 @@ async function handleSubmitReport() {
   const imageInput = document.getElementById("report-image");
   const imageNameSpan = document.getElementById("report-image-name");
 
+  // 기타 선택 시 사유 필수
+  const selectedType = document.querySelector('input[name="reportType"]:checked');
+  const etcInput = document.getElementById("report-etc");
+  if (selectedType && selectedType.value === 'etc' && (!etcInput || !etcInput.value.trim())) {
+    alert("기타 사유를 입력해주세요.");
+    return;
+  }
+
+  // 이미지 필수
+  if (!imageInput || !imageInput.files || !imageInput.files[0]) {
+    alert("사진을 업로드해주세요.");
+    return;
+  }
+
   if(selectedLocation){
     newReport.lat = selectedLocation.lat;
     newReport.lng = selectedLocation.lng;
@@ -217,14 +225,19 @@ localStorage.removeItem("selectedLocation");
 
 // 지도 새로고침
 if (window.parent && window.parent !== window) {
-  window.parent.location.reload();
+  if (typeof window.parent.onReportSubmitted === 'function') {
+    window.parent.onReportSubmitted();
+  }
+  // closeSlide도 호출
+  if (typeof window.parent.closeSlide === 'function') {
+    window.parent.closeSlide();
+  }
 } else {
   window.location.href = "map/map.html";
 }
 
   // 폼 초기화
   locationInput.value = "";
-  const etcInput = document.getElementById("report-etc");
   if (etcInput) {
     etcInput.value = "";
   }
@@ -320,4 +333,22 @@ document.addEventListener("DOMContentLoaded", function () {
       }
     });
   }
+
+   // 기타 아닐 때 사유 입력칸 비활성화
+  const typeRadios = document.querySelectorAll('input[name="reportType"]');
+  const etcInputField = document.getElementById("report-etc");
+
+  function updateEtcInput() {
+    const selected = document.querySelector('input[name="reportType"]:checked');
+    if (etcInputField) {
+      etcInputField.disabled = !(selected && selected.value === 'etc');
+      if (etcInputField.disabled) etcInputField.value = "";
+    }
+  }
+
+  typeRadios.forEach(radio => {
+    radio.addEventListener('change', updateEtcInput);
+  });
+
+  updateEtcInput();
 });
