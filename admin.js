@@ -215,7 +215,12 @@ function updateAdminStatus(id) {
     updateAdminFilterUI();
 
     if (window.parent && window.parent !== window) {
-      window.parent.location.reload();
+      if (typeof window.parent.renderReports === 'function') {
+        window.parent.renderReports();
+      }
+      if (typeof window.parent.moveToMarker === 'function' && report.lat && report.lng) {
+        window.parent.moveToMarker(report.lat, report.lng);
+      }
     }
   }
 }
