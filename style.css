@@ -215,18 +215,104 @@ input.form-input[readonly] {
   display: block;
 }
 
-/* 아주 작은 폰 (가로 360px 이하) */
-@media (max-width: 360px) {
+/* 모바일: 신고 창 여백·크기 개선 (위로 몰림·작아 보임 해소) */
+@media (max-width: 767px) {
   .report-page {
-    padding: 12px 12px 24px;
+    max-width: 100%;
+    padding: 24px 20px 40px;
+    justify-content: center;
+  }
+
+  .report-header {
+    margin-bottom: 20px;
   }
 
   .report-header h1 {
-    font-size: 18px;
+    font-size: 22px;
+  }
+
+  .report-subtitle {
+    font-size: 14px;
   }
 
   .section-title {
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+
+  .report-panel {
+    padding: 20px;
+  }
+
+  .form-row {
+    margin-bottom: 16px;
+  }
+
+  .form-label {
     font-size: 15px;
+    margin-bottom: 6px;
+  }
+
+  .form-input {
+    font-size: 16px;
+    padding: 12px 14px;
+  }
+
+  .form-radios {
+    font-size: 15px;
+    gap: 10px 18px;
+  }
+
+  .location-row {
+    gap: 10px;
+  }
+
+  .btn-ghost {
+    padding: 12px 14px;
+    font-size: 14px;
+    min-height: 44px;
+  }
+
+  .location-help-text {
+    font-size: 13px;
+    margin-top: 6px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 12px 18px;
+    font-size: 15px;
+    min-height: 44px;
+  }
+
+  .form-actions {
+    margin-top: 20px;
+  }
+
+  .panel-close-btn {
+    padding: 8px 12px;
+    top: 16px;
+    right: 16px;
+  }
+
+  .report-alert {
+    font-size: 14px;
+    padding: 10px 14px;
+  }
+}
+
+/* 아주 작은 폰 (가로 360px 이하) */
+@media (max-width: 360px) {
+  .report-page {
+    padding: 20px 16px 32px;
+  }
+
+  .report-header h1 {
+    font-size: 20px;
+  }
+
+  .section-title {
+    font-size: 17px;
   }
 }
 
