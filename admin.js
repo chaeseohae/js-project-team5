@@ -1,5 +1,5 @@
 const ADMIN_PAGE_SIZE = 5;
-let adminCurrentSort = 'oldest';
+let adminCurrentSort = 'newest';
 let adminCurrentFilter = 'all';
 let adminCurrentPage = 1;
 
