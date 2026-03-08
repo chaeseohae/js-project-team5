@@ -29,6 +29,11 @@ function handleCurrentLocationClick() {
     function (position) {
       const lat = position.coords.latitude;
       const lng = position.coords.longitude;
+      // 지도 마커용: 현재 위치도 selectedLocation에 저장 (lat/lng 있어야 지도에 마커 표시됨)
+      localStorage.setItem(
+        "selectedLocation",
+        JSON.stringify({ lat, lng, address: "" })
+      );
       updateLocationFromCoords(lat, lng);
     },
     function (error) {
@@ -88,6 +93,13 @@ function updateLocationFromCoords(lat, lng) {
 
           if (address) {
             locationInput.value = address;
+            // selectedLocation 주소도 갱신 (이미 lat/lng는 저장됨)
+            try {
+              const sel = JSON.parse(localStorage.getItem("selectedLocation") || "{}");
+              if (sel.lat !== undefined && sel.lng !== undefined) {
+                localStorage.setItem("selectedLocation", JSON.stringify({ ...sel, address }));
+              }
+            } catch (e) {}
             return;
           }
         }

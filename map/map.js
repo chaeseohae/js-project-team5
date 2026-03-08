@@ -1,14 +1,11 @@
-const redMarkerImage = new kakao.maps.MarkerImage(
-  "./images/marker-red.svg",
-  new kakao.maps.Size(40, 40),
-);
-
-const orangeMarkerImage = new kakao.maps.MarkerImage(
-  "./images/marker-orange.svg",
-  new kakao.maps.Size(40, 40),
-);
+// 카카오맵은 SVG 미지원 → 기본 마커 사용. 커스텀 아이콘은 PNG로 map/images/에 두고 아래 주석 해제
+// const redMarkerImage = new kakao.maps.MarkerImage("./images/marker-red.png", new kakao.maps.Size(40, 40));
+// const orangeMarkerImage = new kakao.maps.MarkerImage("./images/marker-orange.png", new kakao.maps.Size(40, 40));
+const USE_DEFAULT_MARKER = true; // SVG 대신 기본 마커로 표시 (마커가 안 보이던 문제 해결)
 
 let markers = [];
+// 신고 위치 선택 시 클릭한 곳에 잠깐 표시하는 마커 (한 번에 하나만)
+let selectionMarker = null;
 
 // 지도 영역 가져오기
 const mapArea = document.getElementById("map");
@@ -137,6 +134,14 @@ kakao.maps.event.addListener(drawMap, "click", function (mouseEvent) {
   const latLng = mouseEvent.latLng;
   const lat = latLng.getLat();
   const lng = latLng.getLng();
+
+  // 클릭한 위치에 선택 마커 바로 표시 (딱 튀어오르는 느낌)
+  if (selectionMarker) {
+    selectionMarker.setMap(null);
+    selectionMarker = null;
+  }
+  selectionMarker = new kakao.maps.Marker({ position: latLng });
+  selectionMarker.setMap(drawMap);
 
   geoCoder.coord2Address(lng, lat, function (result, status) {
 
@@ -271,35 +276,40 @@ function renderReports() {
   markers = [];
 
   const reports = JSON.parse(localStorage.getItem("reports")) || [];
+  const withCoords = reports.filter(
+    (r) =>
+      typeof r.lat === "number" &&
+      typeof r.lng === "number" &&
+      r.status !== "done"
+  );
+  console.log("[지도] 신고 수:", reports.length, "| 좌표 있고 미처리:", withCoords.length);
 
   reports.forEach(report => {
-    
-    if (report.status !== "done") {
+    // lat/lng가 없으면 마커 표시 불가 (예: 예전에 GPS만 쓰고 지도 클릭 안 했을 때)
+    const hasValidCoords =
+      typeof report.lat === "number" &&
+      typeof report.lng === "number" &&
+      !Number.isNaN(report.lat) &&
+      !Number.isNaN(report.lng);
 
-      let markerImage;
-
-      if (report.status === "pending") {
-        markerImage = redMarkerImage;
-      } else if (report.status === "processing") {
-        markerImage = orangeMarkerImage;
-      }
-
-      const marker = new kakao.maps.Marker({
+    if (report.status !== "done" && hasValidCoords) {
+      const markerOptions = {
         position: new kakao.maps.LatLng(report.lat, report.lng),
-        image: markerImage
-      });
-
+      };
+      if (!USE_DEFAULT_MARKER) {
+        const markerImage =
+          report.status === "processing" ? orangeMarkerImage : redMarkerImage;
+        if (markerImage) markerOptions.image = markerImage;
+      }
+      const marker = new kakao.maps.Marker(markerOptions);
       marker.setMap(drawMap);
       markers.push(marker);
 
-
       marker.reportId = report.id;
-      kakao.maps.event.addListener(marker, 'click', function() {
+      kakao.maps.event.addListener(marker, "click", function () {
         openSlide(`../my-reports.html?id=${report.id}`);
       });
-
     }
-
   });
 
 }
@@ -321,9 +331,13 @@ function updateReportStatus(id, status) {
 }
 
 // iframe에서 호출할 수 있도록 전역으로 노출
-window.onReportSubmitted = function() {
+window.onReportSubmitted = function () {
+  if (selectionMarker) {
+    selectionMarker.setMap(null);
+    selectionMarker = null;
+  }
   renderReports();
-}
+};
 
 window.moveToMarker = function(lat, lng) {
   const latLng = new kakao.maps.LatLng(lat, lng);
