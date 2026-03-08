@@ -1,7 +1,12 @@
-// 카카오맵은 SVG 미지원 → 기본 마커 사용. 커스텀 아이콘은 PNG로 map/images/에 두고 아래 주석 해제
-// const redMarkerImage = new kakao.maps.MarkerImage("./images/marker-red.png", new kakao.maps.Size(40, 40));
-// const orangeMarkerImage = new kakao.maps.MarkerImage("./images/marker-orange.png", new kakao.maps.Size(40, 40));
-const USE_DEFAULT_MARKER = true; // SVG 대신 기본 마커로 표시 (마커가 안 보이던 문제 해결)
+// 신고접수(pending)=빨강, 처리중(processing)=주황
+const redMarkerImage = new kakao.maps.MarkerImage(
+  "./images/marker-red.svg",
+  new kakao.maps.Size(40, 40)
+);
+const orangeMarkerImage = new kakao.maps.MarkerImage(
+  "./images/marker-orange.svg",
+  new kakao.maps.Size(40, 40)
+);
 
 let markers = [];
 // 신고 위치 선택 시 클릭한 곳에 잠깐 표시하는 마커 (한 번에 하나만)
@@ -293,15 +298,12 @@ function renderReports() {
       !Number.isNaN(report.lng);
 
     if (report.status !== "done" && hasValidCoords) {
-      const markerOptions = {
+      const markerImage =
+        report.status === "processing" ? orangeMarkerImage : redMarkerImage;
+      const marker = new kakao.maps.Marker({
         position: new kakao.maps.LatLng(report.lat, report.lng),
-      };
-      if (!USE_DEFAULT_MARKER) {
-        const markerImage =
-          report.status === "processing" ? orangeMarkerImage : redMarkerImage;
-        if (markerImage) markerOptions.image = markerImage;
-      }
-      const marker = new kakao.maps.Marker(markerOptions);
+        image: markerImage,
+      });
       marker.setMap(drawMap);
       markers.push(marker);
 
