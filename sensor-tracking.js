@@ -115,6 +115,7 @@
               true
             );
             headingListenerAdded = true;
+            createCompass();
           } else {
             console.warn("기기 방향 센서 권한이 거부되었습니다.");
           }
@@ -126,6 +127,7 @@
       // 안드로이드 등
       window.addEventListener("deviceorientation", handleOrientation, true);
       headingListenerAdded = true;
+      createCompass();
     }
   }
 
@@ -139,6 +141,72 @@
     if (SensorTracking.onHeadingChange) {
       SensorTracking.onHeadingChange(heading);
     }
+    updateCompass(heading);
   }
+
+  // ---------- 모바일 나침반 UI (동서남북, 실시간 연동) ----------
+  let compassEl = null;
+  let compassNeedleEl = null;
+  let compassDirectionEl = null;
+
+  function getDirectionLabel(deg) {
+    if (deg >= 337.5 || deg < 22.5) return "북";
+    if (deg >= 22.5 && deg < 67.5) return "북동";
+    if (deg >= 67.5 && deg < 112.5) return "동";
+    if (deg >= 112.5 && deg < 157.5) return "남동";
+    if (deg >= 157.5 && deg < 202.5) return "남";
+    if (deg >= 202.5 && deg < 247.5) return "남서";
+    if (deg >= 247.5 && deg < 292.5) return "서";
+    return "북서";
+  }
+
+  function createCompass() {
+    if (compassEl) return;
+
+    var style = document.createElement("style");
+    style.textContent =
+      ".sensor-compass{" +
+      "position:fixed;bottom:90px;left:16px;z-index:100;" +
+      "width:72px;height:72px;border-radius:50%;" +
+      "background:rgba(255,255,255,0.95);box-shadow:0 4px 16px rgba(0,0,0,0.2);" +
+      "display:flex;align-items:center;justify-content:center;" +
+      "font-family:'Pretendard',sans-serif;}" +
+      ".sensor-compass-rose{position:relative;width:56px;height:56px;}" +
+      ".sensor-compass-needle{position:absolute;left:50%;top:50%;width:4px;height:24px;" +
+      "margin-left:-2px;margin-top:-24px;background:linear-gradient(to top,#c00 0%,#c00 40%,#333 40%);" +
+      "border-radius:2px;transform-origin:center bottom;transition:transform 0.1s ease-out;}" +
+      ".sensor-compass-labels{position:absolute;inset:0;pointer-events:none;font-size:10px;font-weight:700;color:#333;}" +
+      ".sensor-compass-labels .n{position:absolute;top:0;left:50%;transform:translateX(-50%);}" +
+      ".sensor-compass-labels .e{position:absolute;right:0;top:50%;transform:translateY(-50%);}" +
+      ".sensor-compass-labels .s{position:absolute;bottom:0;left:50%;transform:translateX(-50%);}" +
+      ".sensor-compass-labels .w{position:absolute;left:0;top:50%;transform:translateY(-50%);}" +
+      ".sensor-compass-direction{position:absolute;bottom:-22px;left:50%;transform:translateX(-50%);" +
+      "font-size:11px;font-weight:700;color:#7B5CFF;}";
+    document.head.appendChild(style);
+
+    compassEl = document.createElement("div");
+    compassEl.className = "sensor-compass";
+    compassEl.setAttribute("aria-label", "나침반");
+    compassEl.innerHTML =
+      '<div class="sensor-compass-rose">' +
+      '<div class="sensor-compass-needle" id="sensorCompassNeedle"></div>' +
+      '<div class="sensor-compass-labels">' +
+      '<span class="n">북</span><span class="e">동</span><span class="s">남</span><span class="w">서</span>' +
+      "</div>" +
+      '<span class="sensor-compass-direction" id="sensorCompassDirection">북</span>';
+    document.body.appendChild(compassEl);
+
+    compassNeedleEl = document.getElementById("sensorCompassNeedle");
+    compassDirectionEl = document.getElementById("sensorCompassDirection");
+  }
+
+  function updateCompass(headingDeg) {
+    if (!compassNeedleEl) return;
+    compassNeedleEl.style.transform = "rotate(" + headingDeg + "deg)";
+    if (compassDirectionEl) {
+      compassDirectionEl.textContent = getDirectionLabel(headingDeg);
+    }
+  }
+
 })();
 
