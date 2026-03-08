@@ -1,0 +1,409 @@
+body {
+    margin: 0;
+    font-family: sans-serif;
+}
+
+/* 창 전체 우측 상단 닫기 버튼 */
+.panel-close-btn {
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    background: #ffffff;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #666;
+    border-radius: 999px;
+    padding: 6px 10px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+}
+
+.panel-close-btn:hover {
+    color: #111827;
+    background: #f3f4f6;
+}
+
+h1 {
+    font-size: 22px;
+    font-weight: bold;
+    margin-top: 20px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.admin-wrapper {
+    max-width: 500px;
+    margin: 0 10px;
+}
+
+/* ─── 필터 탭 ─── */
+.admin-filter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.admin-filter-btn {
+    color: #000;
+    background-color: #fff;
+    border: none;
+    padding: 6px 10px;
+    margin-right: 5px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    box-shadow: 0 1px 3px rgba(160, 77, 255, 0.25);
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        box-shadow 0.15s ease,
+        transform 0.12s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+}
+
+.admin-filter-btn.active {
+    background-color: #a04dff;
+    color: #fff;
+    box-shadow:
+        0 4px 10px rgba(160, 77, 255, 0.3),
+        inset 0 -2px 0 rgba(0, 0, 0, 0.15);
+    transform: translateY(1px);
+}
+
+.admin-filter-btn:hover:not(.active) {
+    background-color: #f6f1ff;
+    box-shadow: 0 2px 6px rgba(160, 77, 255, 0.35);
+}
+
+/* ─── 뱃지 ─── */
+.admin-filter .count-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+[data-filter="all"] .count-badge {
+    background-color: #e8d5ff;
+    color: #a04dff;
+}
+
+[data-filter="pending"] .count-badge {
+    background-color: #eeeeee;
+    color: #616161;
+}
+
+[data-filter="processing"] .count-badge {
+    background-color: #fff3e0;
+    color: #ef6c00;
+}
+
+[data-filter="done"] .count-badge {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+}
+
+.admin-filter-btn.active .count-badge {
+    background-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+/* ─── 페이지네이션 ─── */
+.admin-pagination {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    padding: 16px 0 8px;
+}
+
+.admin-page-btn {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 8px;
+    background: #f0f0f0;
+    color: #555;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+}
+
+.admin-page-btn:hover:not(.active) {
+    background: #e8d5ff;
+    color: #a04dff;
+}
+
+.admin-page-btn.active {
+    background: #a04dff;
+    color: #fff;
+}
+
+/* ─── 숨겨진 관리자 버튼 ─── */
+#hiddenAdminBtn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 999;
+}
+
+/* ─── 정렬 드롭박스 ─── */
+.sort-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 14px;
+}
+
+.admin-sort-select {
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 13px;
+    color: #333;
+    background: #fff;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(160, 77, 255, 0.25);
+    margin-right: 5px;
+}
+
+.admin-sort-select:focus {
+    outline: none;
+    border-color: #a04dff;
+}
+
+/* ─── 관리자 사이드패널 ─── */
+.admin-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 420px;
+    min-width: 360px;
+    height: 100vh;
+    background: #fff;
+    z-index: 900;
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    box-shadow: 4px 0 12px rgba(0,0,0,0.15);
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.admin-panel.open {
+    transform: translateX(0);
+}
+
+.admin-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 20px 0 20px;
+    margin-bottom: 20px;
+}
+
+.admin-panel-header h1 {
+    font-size: 22px;
+    font-weight: bold;
+    margin: 0;
+    text-align: left;
+}
+
+.admin-close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: #aaa;
+    line-height: 1;
+    padding: 0;
+}
+
+.admin-close-btn:hover {
+    color: #333;
+}
+
+.admin-body {
+    padding: 0 16px 40px;
+}
+
+/* ─── 카드 ─── */
+.admin-card {
+    background: #fff;
+    border-radius: 7px;
+    margin-bottom: 14px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    padding: 12px;
+}
+
+.admin-card-top {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: stretch;
+}
+
+.admin-card-img-wrap {
+    width: 80px;
+    flex-shrink: 0;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.admin-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.admin-card-info {
+    flex: 1;
+}
+
+.admin-report-status {
+    display: inline-block;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    border-radius: 12px;
+    margin-bottom: 4px;
+}
+
+.admin-card.status-pending .admin-report-status    { background: #eee; color: #616161; }
+.admin-card.status-processing .admin-report-status { background: #fff3e0; color: #ef6c00; }
+.admin-card.status-done .admin-report-status       { background: #e8f5e9; color: #2e7d32; }
+
+.admin-card-title {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.admin-card-desc {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 3px;
+}
+
+.admin-card-meta {
+    font-size: 11px;
+    color: #aaa;
+}
+
+/* ─── 액션 영역 ─── */
+.admin-card-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    padding-top: 8px;
+    border-top: 1px solid #f0f0f0;
+}
+
+.status-select {
+    flex: 1;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #333;
+    background: #fafafa;
+    cursor: pointer;
+}
+
+.status-select:focus {
+    outline: none;
+    border-color: #a04dff;
+}
+
+.confirm-btn {
+    background: #a04dff;
+    border: none;
+    border-radius: 8px;
+    padding: 5px 14px;
+    font-size: 12px;
+    color: #fff;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s;
+}
+
+.confirm-btn:hover {
+    background: #8a3de0;
+}
+
+.delete-btn {
+    align-self: flex-end;
+    margin-top: auto;
+    background-color: transparent;
+    color: #aaaaaa;
+    border: 1px solid #dddddd;
+    border-radius: 8px;
+    padding: 5px 14px;
+    font-size: 12px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.delete-btn:hover {
+    background-color: #fff0f0;
+    color: #e53935;
+    border-color: #e53935;
+}
+
+.delete-done-btn {
+    background-color: transparent;
+    color: #aaaaaa;
+    border: 1px solid #dddddd;
+    border-radius: 10px;
+    padding: 5px 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition:
+        background-color 0.15s ease,
+        color 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.delete-done-btn:hover {
+    background-color: #fff0f0;
+    color: #e53935;
+    border-color: #e53935;
+}
+
+/* ─── 빈 상태 ─── */
+.admin-empty {
+    text-align: center;
+    color: #aaa;
+    font-size: 14px;
+    padding: 40px 0;
+}
+
+/* ─── 스크롤바 ─── */
+.admin-panel::-webkit-scrollbar { width: 6px; }
+.admin-panel::-webkit-scrollbar-track { background: transparent; }
+.admin-panel::-webkit-scrollbar-thumb { border-radius: 3px; background: #c8c8c8; }
+.admin-panel::-webkit-scrollbar-button { width: 0; height: 0; }
+
+body::-webkit-scrollbar { width: 6px; }
+body::-webkit-scrollbar-track { background-color: transparent; }
+body::-webkit-scrollbar-thumb { border-radius: 3px; background-color: rgb(168, 168, 168); }
+body::-webkit-scrollbar-button { width: 0; height: 0; }

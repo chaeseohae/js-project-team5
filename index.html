@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>킥보드 신고 - 강필성</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- Kakao Maps JS SDK (역지오코딩용) -->
+  <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=1f489101c4804d0ce2dcf5da6a8cec2e&libraries=services"></script>
+</head>
+<body>
+  <!-- 전체 페이지 컨테이너 -->
+  <div class="report-page">
+
+    <!-- (실제 합칠 때는 지도 영역은 다른 파일에서 올 것) -->
+    <header class="report-header">
+      <div class="panel-header-row">
+        <h1>킥보드 신고</h1>
+        <button
+          type="button"
+          class="panel-close-btn"
+          id="btn-close-report"
+          aria-label="신고 창 닫기"
+        >
+          ×
+        </button>
+      </div>
+      <p class="report-subtitle">
+        지도에서 위치를 선택하고, 신고 유형을 입력하세요.
+      </p>
+    </header>
+
+    <!-- 신고 폼 영역 (필성님 메인 파트) -->
+    <section class="report-panel" id="report-panel">
+      <h2 class="section-title">킥보드 신고하기</h2>
+
+      <div id="report-success" class="report-alert" aria-live="polite">
+        신고가 완료되었습니다.
+      </div>
+
+      <!-- 위치 정보: 마커 클릭 또는 GPS 버튼 클릭 시 자동 채움 (사용자는 직접 수정 불가) -->
+      <div class="form-row">
+        <label class="form-label" for="report-location-input">위치</label>
+        <div class="location-row">
+          <input
+            id="report-location-input"
+            type="text"
+            class="form-input"
+            placeholder="지도에서 위치를 선택하거나 GPS 버튼을 눌러주세요"
+            readonly
+          />
+          <button type="button" class="btn-ghost" id="btn-current-location">
+            현재 위치
+          </button>
+          <button type="button" class="btn-ghost" id="btn-location-reset">
+            초기화
+          </button>
+        </div>
+        <p class="location-help-text">
+          마커를 클릭하거나 현재 위치 버튼을 누르면 자동으로 채워집니다. 초기화 버튼으로 비울 수 있습니다.
+        </p>
+      </div>
+
+      <!-- 신고 유형 라디오 -->
+      <div class="form-row">
+        <label class="form-label">신고 유형</label>
+        <div class="form-radios">
+          <label><input type="radio" name="reportType" value="block_crosswalk" checked /> 보행 방해</label>
+          <label><input type="radio" name="reportType" value="block_braille" /> 점자블록 침범</label>
+          <label><input type="radio" name="reportType" value="block_entrance" /> 횡단보도 앞 방치</label>
+          <label><input type="radio" name="reportType" value="etc" /> 기타</label>
+        </div>
+      </div>
+
+      <!-- 기타 사유 -->
+      <div class="form-row">
+        <label class="form-label" for="report-etc">기타 사유</label>
+        <input
+          id="report-etc"
+          type="text"
+          class="form-input"
+          placeholder="직접 입력하세요"
+        />
+      </div>
+
+      <!-- 사진 업로드 -->
+     <div class="form-row">
+      <label class="form-label">사진 첨부</label>
+
+     <!-- 숨겨진 파일 입력 -->
+     <input
+       id="report-image"
+       type="file"
+       accept="image/*"
+       style="display: none"
+     />
+
+     <!-- 사용자가 누르는 버튼 -->
+     <button type="button" class="btn-secondary" id="btn-upload-image">
+       사진 업로드
+     </button>
+
+     <!-- 선택한 파일명 표시용 (옵션) -->
+     <span id="report-image-name" class="image-name-text"></span>
+     </div>
+
+      <!-- 신고 버튼 -->
+      <div class="form-row form-actions">
+        <button type="button" class="btn-primary" id="btn-submit-report">이 위치 신고하기</button>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- JS -->
+  <script src="main.js"></script>
+</body>
+</html>
+

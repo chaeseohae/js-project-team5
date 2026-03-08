@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KICKCLEAN</title>
+    <link rel="stylesheet" href="../admin.css">
+    <link rel="stylesheet" href="map.css">
+    <script src="https://dapi.kakao.com/v2/maps/sdk.js?appkey=1f489101c4804d0ce2dcf5da6a8cec2e&libraries=services"></script>
+</head>
+
+<body>
+    <div id="map"></div>   
+
+    <div class="sidebar" id="sidebar">
+        <iframe id="slideFrame"></iframe>
+    </div>
+
+    <button id="slideBtn" class="slide-btn">></button>
+
+    <div class="top-menu">
+        <button id="homeBtn">KICKCLEAN</button>
+
+        <!-- 햄버거 버튼 -->
+        <button id="menuToggle" class="menu-toggle">☰</button>
+
+        <button id="reportBtn">신고하기</button>
+        <button id="myReportsBtn">신고내역</button>
+        <button id="guideBtn">주차 가이드</button>
+
+        <!-- 모바일 메뉴 -->
+        <div class="mobile-menu" id="mobileMenu">
+            <button id="mReportBtn">신고하기</button>
+            <button id="mMyReportsBtn">신고내역</button>
+            <button id="mGuideBtn">주차 가이드</button>
+        </div>
+    </div>
+    
+    <div class="zoom-control">
+        <button id="zoomIn">+</button>
+        <button id="zoomOut">-</button>
+        <button id="myLocationBtn">◎</button>
+    </div>
+
+    <button id="hiddenAdminBtn"></button>
+
+    
+    <script src="../sensor-tracking.js"></script>
+    <script src="map.js"></script>
+    <script src="../admin.js"></script>
+</body>
+</html>

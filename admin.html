@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+    <button
+      type="button"
+      class="panel-close-btn"
+      id="btn-close-admin"
+      aria-label="관리자 창 닫기"
+    >
+      ×
+    </button>
+    <h1>관리자 페이지</h1>
+    <div class="admin-wrapper">
+        <!-- 필터 탭 -->
+        <div class="admin-filter" id="adminFilter">
+            <button class="admin-filter-btn active" data-filter="all">전체</button>
+            <button class="admin-filter-btn" data-filter="pending">신고 접수</button>
+            <button class="admin-filter-btn" data-filter="processing">처리 중</button>
+            <button class="admin-filter-btn" data-filter="done">처리 완료</button>
+        </div>
+
+        <!-- 정렬 드롭박스 -->
+        <div class="sort-container">
+            <button class="delete-done-btn" id="deleteDoneBtn" onclick="deleteAllDone()" style="display:none;">모두 지우기</button>
+            <select class="admin-sort-select" id="adminSortSelect">
+                <option value="newest">최신순</option>
+                <option value="oldest">오래된순</option>
+            </select>
+        </div>
+
+        <!-- 카드 목록 -->
+        <div style="margin: 0 10px;">
+            <div id="adminBody"></div>
+        </div>
+    </div>
+
+    <script src="admin.js"></script>
+</body>
+</html>

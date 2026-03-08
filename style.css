@@ -1,0 +1,262 @@
+/* 전체 레이아웃 */
+body {
+  margin: 0;
+  font-family: "Noto Sans KR", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: #f3f4f6;
+  color: #222;
+}
+
+.report-page {
+  max-width: 480px;
+  margin: 0 auto;
+  background: #ffffff;
+  min-height: 100vh;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.08);
+  padding: 12px 16px 16px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+/* 헤더 */
+.report-header {
+  position: relative;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.report-header h1 {
+  margin: 0;
+  font-size: 20px;
+  color: black;
+}
+
+/* 창 전체 우측 상단 닫기 버튼 */
+.panel-close-btn {
+  position: fixed;
+  top: 12px;
+  right: 12px;
+  background: #ffffff;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+  border-radius: 999px;
+  padding: 6px 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+}
+
+.panel-close-btn:hover {
+  color: #111827;
+  background: #f3f4f6;
+}
+
+.report-subtitle {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #666;
+}
+
+/* 섹션 공통 */
+.section-title {
+  font-size: 16px;
+  margin: 0 0 12px;
+  color: #111;
+}
+
+/* 신고 패널 */
+.report-panel {
+  border-radius: 8px;
+  padding: 16px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+}
+
+/* 나중에 패널 열림/닫힘 효과를 줄 수 있는 클래스 */
+.report-panel.is-open {
+  border-color: #ff9800;
+  box-shadow: 0 0 0 2px rgba(255, 152, 0, 0.2);
+}
+
+/* 폼 레이아웃 */
+.form-row {
+  margin-bottom: 12px;
+}
+
+.form-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 4px;
+  color: #374151;
+}
+
+.form-value {
+  font-size: 14px;
+  padding: 8px 10px;
+  background: #fff;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+}
+
+.form-radios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  font-size: 13px;
+}
+
+.form-radios label {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.form-input {
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.form-input::placeholder {
+  color: #9ca3af;
+}
+
+/* 읽기 전용 인풋(위치) 스타일 */
+input.form-input[readonly] {
+  background-color: #f9fafb;
+  cursor: default;
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.location-row .form-input {
+  flex: 1;
+}
+
+.btn-ghost {
+  padding: 8px 10px;
+  font-size: 12px;
+  border-radius: 4px;
+  border: 1px solid #d1d5db;
+  background-color: #ffffff;
+  color: #374151;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.btn-ghost:hover {
+  background-color: #f3f4f6;
+}
+
+.location-help-text {
+  margin-top: 4px;
+  font-size: 12px;
+  color: #6b7280;
+}
+
+/* 버튼 */
+.btn-primary,
+.btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: none;
+  padding: 10px 16px;
+  font-size: 14px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: #7c3aed;
+  color: #fff;
+  width: 100%;
+}
+
+.btn-primary:hover {
+  background: #6d28d9;
+}
+
+.btn-secondary {
+  background: #1976d2;
+  color: #fff;
+}
+
+.btn-secondary:hover {
+  background: #1565c0;
+}
+
+.form-actions {
+  margin-top: 16px;
+}
+
+.report-alert {
+  display: none;
+  margin-bottom: 12px;
+  padding: 8px 12px;
+  border-radius: 6px;
+  background-color: #7c3aed;
+  color: #ffffff;
+  font-size: 13px;
+}
+
+.report-alert.is-visible {
+  display: block;
+}
+
+/* 아주 작은 폰 (가로 360px 이하) */
+@media (max-width: 360px) {
+  .report-page {
+    padding: 12px 12px 24px;
+  }
+
+  .report-header h1 {
+    font-size: 18px;
+  }
+
+  .section-title {
+    font-size: 15px;
+  }
+}
+
+/* 일반 모바일 ~ 작은 태블릿 (가로 480px 이상 767px 이하) */
+@media (min-width: 480px) and (max-width: 767px) {
+  .report-page {
+    max-width: 520px;
+    padding: 20px 24px 32px;
+  }
+
+  .report-header h1 {
+    font-size: 22px;
+  }
+
+  .section-title {
+    font-size: 17px;
+  }
+}
+
+/* 태블릿 이상 (가로 768px 이상) */
+@media (min-width: 768px) {
+  body {
+    background-color: #e5e7eb;
+  }
+
+  .report-page {
+    max-width: 640px;
+    margin: 24px auto;
+    border-radius: 12px;
+    box-shadow: 0 10px 24px rgba(15, 23, 42, 0.15);
+  }
+}
+
